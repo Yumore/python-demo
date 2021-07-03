@@ -38,7 +38,7 @@ class qihu:
             link_list = re.findall(r"(?<=&url=).*?%26v%3D%26f%3Dz.apk", html)
             patten = re.compile(r'thirdlink&name=(.*?)&icon=')
             app_name_list = patten.findall(html)
-            print("本页共计 %d 个app，将依次进行下载，详情如下:", app_name_list)
+            print("本页共计 %d 个app，将依次进行下载，详情如下:" % len(app_name_list), app_name_list)
             for url in link_list:
                 try:
                     app_name = '{0}.apk'.format(app_name_list[self.index])
@@ -75,10 +75,9 @@ class qihu:
 
                                 request.urlretrieve(url, file_path, reporthook=reporthook)
                                 apk_info.get_apk_info(file_path)
-                                print('\ndownload finished!')
                                 request.urlcleanup()
                                 file_size = os.path.getsize(file_path)
-                                print('\rfile size = %.2f MB' % (file_size / 1024 / 1024))
+                                print('\rdownload finished, file size : %.2f MB' % (file_size / 1024 / 1024))
                                 file_utils.gen_file_md5(file_path)
                                 # time.sleep(3)
                                 break

@@ -10,7 +10,7 @@ def get_file_md5(file_path):
     with open(file_path, 'rb') as file:
         while True:
             data = file.read(99999999)
-            print('验证速度：%.2f Mb/s' % (len(data) / (1024 ** 2)), end='\r')
+            print('验证速度：%.2f Mibps' % (len(data) / (1024 ** 2)), end='')
             if not data:
                 break
             md5_data.update(data)
@@ -24,7 +24,7 @@ def gen_file_md5(file_path):
     md5_file = "%s.md5" % file_path
     file_out = open(md5_file, "w")
     file_out.write("%s %s\n" % (get_file_md5(file_path), file_name.strip()))
-    print("generate success, file_path:%s" % md5_file)
+    print("\ngenerate success, file_path : %s" % md5_file)
     file_out.flush()
     file_out.close()
 

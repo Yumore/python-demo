@@ -20,7 +20,6 @@ def parse_cfg(section, key, default_value):
 
 def write_data(app_name, version_code, version_name, package_name, app_signature, update_time):
     data_type = parse_cfg("database", "type", "mysql")
-    print("save data type : %s" % data_type)
     if data_type == "json":
         write_json(app_name, version_code, version_name, package_name, app_signature, update_time)
     else:
@@ -54,7 +53,6 @@ def write_json(app_name, version_code, version_name, package_name, app_signature
 
     with open('./data.json', 'w+', encoding='utf-8') as file_w:
         json.dump(json_text, file_w, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ':'))
-        # json.dump(json_text, file, sort_keys=True, indent=4)
 
 
 def write_sql(app_name, version_code, version_name, package_name, app_signature, update_time):
@@ -70,10 +68,10 @@ def write_sql(app_name, version_code, version_name, package_name, app_signature,
     try:
         db_cursor.execute(insert_sql, parser_sql)
         db_connect.commit()
-        print("insert data finish")
+        print("\rinsert data finish")
     except Exception as e:
         db_connect.rollback()
-        print("insert data error :", e)
+        print("\rinsert data error :", e)
     db_connect.close()
 
 
