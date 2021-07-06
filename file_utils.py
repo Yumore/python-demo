@@ -9,7 +9,7 @@ def get_file_md5(file_path):
     print('正在验证文件名称：%s， 文件大小：%s MB' % (file_name, file_size))
     with open(file_path, 'rb') as file:
         while True:
-            data = file.read(99999999)
+            data = file.read(1024 ** 10)
             print('验证速度：%.2f Mibps' % (len(data) / (1024 ** 2)), end='')
             if not data:
                 break

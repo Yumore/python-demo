@@ -82,7 +82,7 @@ class qihu:
                                 # time.sleep(3)
                                 break
                             except socket.timeout:
-                                error_info = '\nReloading for %d time' % count if count == 1 else 'Reloading for %d times' % count
+                                error_info = 'Reloading for %d time' % count if count == 1 else 'Reloading for %d times' % count
                                 print("\rerror info : %s" % error_info)
                                 count += 1
                         if count > 5:

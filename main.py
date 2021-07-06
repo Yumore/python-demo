@@ -9,6 +9,7 @@ from yyb import yyb
 if __name__ == '__main__':
     name = data_utils.parse_cfg('download', 'type', 'yyb')
     start_time = datetime.today().now()
+    # data_utils.merge_data()
     if name == 'qihu':
         # 360 应用市场
         a = qihu()
