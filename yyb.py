@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 import socket
 import threading
 from urllib import request
@@ -62,11 +63,9 @@ class yyb:
     def spider(self):
         for index in range(len(self.url_list)):
             try:
-                # req = request.Request(self.url_list[index])
-                # req.add_header(headers)
                 response = request.urlopen(self.url_list[index], timeout=15)
-                # response = request.urlopen(req, timeout=15)
                 html = response.readlines()
+                app_name_list = re.findall(r'appname="(.*?)" appicon=', html)
                 link_list = []
                 for task in range(len(html)):
                     str_tmp = str(html[task], encoding="utf8")
@@ -76,7 +75,6 @@ class yyb:
                         link_list.append(tmp)
 
                 self.single_thread(link_list)
-                # self.multi_threads()
 
             except Exception as e:
                 print("exception : %s" % str(e))

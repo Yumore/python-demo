@@ -35,34 +35,20 @@ class qihu:
             response = request.urlopen(self.url_list[index], timeout=15)
             html = response.read()
             html = html.decode('utf-8')
+            # print('url list is : ', re.findall(r"(?<=&url=).*?apk", html))
             link_list = re.findall(r"(?<=&url=).*?%26v%3D%26f%3Dz.apk", html)
             patten = re.compile(r'thirdlink&name=(.*?)&icon=')
             app_name_list = patten.findall(html)
-            print("本页共计 %d 个app，将依次进行下载，详情如下:" % len(app_name_list), app_name_list)
+            print("当前分类: %d, 本页共计%d个app，将依次进行下载，详情如下:" % (index, len(app_name_list)), app_name_list)
             for url in link_list:
+                print('current url is : %s' % url)
                 try:
                     app_name = '{0}.apk'.format(app_name_list[self.index])
-                    if "\xa0" in app_name:
-                        print("app name constrains \xa0")
-                        app_name = app_name.replace("\xa0", '')
-                    if "\x20" in app_name:
-                        print("app name constrains \x20")
-                        app_name = app_name.replace("\x20", '')
                     if " " in app_name:
                         print("app name constrains  ")
                         app_name = app_name.replace(" ", '')
-                    if "com" in url:
-                        if re.search(r"(?<=/com)(.*?)_\d*?.apk", url).group(1):
-                            package_name = re.search(r"(?<=/com)(.*?)_\d*?.apk", url).group(1)
-                            package_name = "com" + package_name + ".apk"
-                            self.apk_list.append(package_name)
-                    elif "tv" in url:
-                        if re.search(r"(?<=/tv)(.*?)_\d*?.apk", url).group(1):
-                            package_name = re.search(r"(?<=/tv)(.*?)_\d*?.apk", url).group(1)
-                            package_name = "tv" + package_name + ".apk"
-                            self.apk_list.append(package_name)
-                    else:
-                        print('url is : %s' % url)
+                    # http://s.shouji.qihucdn.com/210615/88e3d6ad97f17836fc2be9c7f10f8ee8/com.doumi.jianzhi_134.apk
+                    # ?en=curpage%3D%26exp%3D1626254620%26from%3DAppList_json%26m2%3D%26ts%3D1625649820%26tok%3Dbb89589c22a22c76bc917767b8083660%26v%3D%26f%3Dz.apk
                     file_path = os.path.join(self.download_path, app_name)
                     if not os.path.isfile(file_path):
                         count = 1
@@ -89,7 +75,7 @@ class qihu:
                             print('\ndownload failed!')
                     else:
                         print('\nfile already exists! file path is : %s' % file_path)
-                        md5_file = "%s.md5" % file_path
+                        md5_file = '{0}.md5'.format(file_path)
                         if not os.path.isfile(md5_file):
                             os.remove(file_path)
                         else:
@@ -103,8 +89,6 @@ class qihu:
                     self.index = self.index + 1
                 except Exception as e:
                     print('exception >> %s --> %s' % (url, str(e)))
-            print(self.apk_list)
-            print(len(self.apk_list))
 
     def start(self):
         self.get_url(50)
