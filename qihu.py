@@ -4,6 +4,7 @@ import os
 import re
 import socket
 from urllib import request
+from urllib.error import ContentTooShortError
 
 import apk_info
 import data_utils
@@ -41,7 +42,6 @@ class qihu:
             app_name_list = patten.findall(html)
             print("当前分类: %d, 本页共计%d个app，将依次进行下载，详情如下:" % (index, len(app_name_list)), app_name_list)
             for url in link_list:
-                print('current url is : %s' % url)
                 try:
                     app_name = '{0}.apk'.format(app_name_list[self.index])
                     if " " in app_name:
@@ -55,22 +55,15 @@ class qihu:
                         while count <= 5:
                             try:
                                 print('\rtry to download %s with %d times' % (file_path, count))
-
-                                def reporthook(block_num, block_size, block_total):
-                                    print('\rdownload progress: %.2f%%' % (block_num * block_size * 100.0 / block_total), end="")
-
-                                request.urlretrieve(url, file_path, reporthook=reporthook)
-                                apk_info.get_apk_info(file_path)
-                                request.urlcleanup()
-                                file_size = os.path.getsize(file_path)
-                                print('\rdownload finished, file size : %.2f MB' % (file_size / 1024 / 1024))
-                                file_utils.gen_file_md5(file_path)
-                                # time.sleep(3)
+                                self.real_down(url=url, file_path=file_path)
                                 break
                             except socket.timeout:
                                 error_info = 'Reloading for %d time' % count if count == 1 else 'Reloading for %d times' % count
                                 print("\rerror info : %s" % error_info)
                                 count += 1
+                            except ContentTooShortError:
+                                print('Network conditions is not good. Reloading...')
+                                self.real_down(url=url, file_path=file_path)
                         if count > 5:
                             print('\ndownload failed!')
                     else:
@@ -88,7 +81,19 @@ class qihu:
 
                     self.index = self.index + 1
                 except Exception as e:
-                    print('exception >> %s --> %s' % (url, str(e)))
+                    print('\rexception >> %s --> %s' % (url, str(e)))
+
+    def real_down(self, url, file_path):
+        def reporthook(block_num, block_size, block_total):
+            print('\rdownload progress: %.2f%%' % (block_num * block_size * 100.0 / block_total), end="")
+
+        request.urlretrieve(url, file_path, reporthook=reporthook)
+        apk_info.get_apk_info(file_path)
+        request.urlcleanup()
+        file_size = os.path.getsize(file_path)
+        print('\rdownload finished, file size : %.2f MB' % (file_size / 1024 / 1024))
+        file_utils.gen_file_md5(file_path)
+        # time.sleep(3)
 
     def start(self):
         self.get_url(50)

@@ -81,14 +81,13 @@ def merge_data():
     db_pool = get_db_pool(True)
     db_connect = db_pool.connection()
     db_cursor = db_connect.cursor()
-    select_sql = "SELECT app_name,version_code,version_name,package_name,app_signature_v2,update_time,target_sdk,app_signature_v3 FROM antivirus_temp GROUP BY package_name"
+    select_sql = "SELECT app_name,version_code,version_name,package_name,app_signature_v2,update_time, target_sdk,app_signature_v3 FROM antivirus_temp GROUP BY package_name"
     print('--------------------------------------------------------------')
     print("\rselect_sql : %s , database name : %s" % (select_sql, db_pool))
     print('--------------------------------------------------------------')
     try:
         db_cursor.execute(select_sql)
         for result in db_cursor.fetchall():
-            # print("result: %s" % str(result))
             insert_data(result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7])
     except Exception as e:
         db_cursor.close()
