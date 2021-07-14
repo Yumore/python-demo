@@ -62,7 +62,7 @@ def insert_data(app_name, version_code, version_name, package_name, app_signatur
     db_connect = db_pool.connection()
     db_cursor = db_connect.cursor()
     # insert ignore into
-    insert_sql = "REPLACE INTO antivirus(app_name,version_code,version_name,package_name,app_signature_v2,update_time,target_sdk,app_signature_v3) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"
+    insert_sql = "REPLACE INTO antivirus_temp(app_name,version_code,version_name,package_name,app_signature_v2,update_time,target_sdk,app_signature_v3) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"
     parser_sql = (app_name, version_name, version_code, package_name, app_signature_v2, update_time, target_sdk, app_signature_v3)
     print('--------------------------------------------------------------')
     print("\rinsert_sql : %s , parser_sql_v : %s" % (insert_sql, parser_sql))
@@ -81,7 +81,7 @@ def merge_data():
     db_pool = get_db_pool(True)
     db_connect = db_pool.connection()
     db_cursor = db_connect.cursor()
-    select_sql = "SELECT app_name,version_code,version_name,package_name,app_signature_v2,update_time, target_sdk,app_signature_v3 FROM antivirus_temp GROUP BY package_name"
+    select_sql = "SELECT app_name,version_code,version_name,package_name,app_signature_v2,update_time, target_sdk,app_signature_v3 FROM antivirus GROUP BY package_name"
     print('--------------------------------------------------------------')
     print("\rselect_sql : %s , database name : %s" % (select_sql, db_pool))
     print('--------------------------------------------------------------')

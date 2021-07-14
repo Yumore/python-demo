@@ -25,7 +25,7 @@ def get_cert_md5_v3(android_guard):
 
 
 def get_apk_info(apk_path):
-    print('get apk info -> file path : %s' % apk_path)
+    print('\rget apk info -> file path : %s' % apk_path)
     try:
         android_guard = APK(apk_path)
         if android_guard.is_valid_APK():
@@ -40,4 +40,4 @@ def get_apk_info(apk_path):
             permissions_declare = android_guard.get_permissions()
             data_utils.write_data(app_name, version_name, version_code, package_name, app_signature_v2, update_time, target_sdk, app_signature_v3)
     except Exception as e:
-        print('get apk info : exception >>', e)
+        print('\rget apk info : exception >>', e)
