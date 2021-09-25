@@ -77,6 +77,25 @@ def insert_data(app_name, version_code, version_name, package_name, app_signatur
     db_connect.close()
 
 
+def insert_virus(virus_name, virus_number, virus_level, virus_describe):
+    db_poll = get_db_pool(True)
+    db_connect = db_poll.connection()
+    db_cursor = db_connect.cursor()
+    insert_sql = "REPLACE INTO virus_sample(virus_name, virus_number, virus_level, virus_describe) VALUES (%s, %s, %s, %s)"
+    parser_sql = (virus_name, virus_number, virus_level, virus_describe)
+    print('--------------------------------------------------------------')
+    print("\rinsert_sql : %s , parser_sql_v : %s" % (insert_sql, parser_sql))
+    print('--------------------------------------------------------------')
+    try:
+        db_cursor.execute(insert_sql, parser_sql)
+        db_connect.commit()
+        print("\rinsert data finish")
+    except Exception as e:
+        db_connect.rollback()
+        print("\rinsert data error :", e)
+    db_connect.close()
+
+
 def merge_data():
     db_pool = get_db_pool(True)
     db_connect = db_pool.connection()
