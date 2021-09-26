@@ -42,8 +42,8 @@ class mobei:
             ths = re.findall(r"<th .*?>(.*?)</th>", table, re.S | re.M)
             for th in ths:
                 print('th : %s' % th)
-
-            trs = re.findall(r"<tr .*?>(.*?)</tr>", table, re.S | re.M)  # 因为<tr>标签大多数不是在同一行，所以要加 re.S和re.M多行匹配
+            # 因为<tr>标签大多数不是在同一行，所以要加 re.S和re.M多行匹配
+            trs = re.findall(r"<tr .*?>(.*?)</tr>", table, re.S | re.M)
             for row in trs:
                 # print("-----------------------------------------------------------------------------------")
                 # print("row: %s" % row)
