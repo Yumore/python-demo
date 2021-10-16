@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import os
-import re
 import socket
+import stat
 import threading
 from urllib import request
 
@@ -44,6 +44,7 @@ class yyb:
             while count <= 5:
                 try:
                     print('\rtry to download %s with %d times' % (file_path, count))
+                    os.chmod(self.download_path, stat.S_IRWXO + stat.S_IRWXG | stat.S_IRWXU)
 
                     def reporthook(block_num, block_size, block_total):
                         print('\rdownload progress: %.2f%%' % (block_num * block_size * 100.0 / block_total), end="")
@@ -65,7 +66,6 @@ class yyb:
             try:
                 response = request.urlopen(self.url_list[index], timeout=15)
                 html = response.readlines()
-                app_name_list = re.findall(r'appname="(.*?)" appicon=', html)
                 link_list = []
                 for task in range(len(html)):
                     str_tmp = str(html[task], encoding="utf8")
