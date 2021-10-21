@@ -25,20 +25,27 @@ class bazaar:
         for table in tables:
             # print(table)
             # 匹配<th></th>之间的内容
-            ths = re.findall(r"<th>(.*?)</th>", table, re.S | re.M)
-            for th in ths:
-                print('th : %s' % th)
             # 因为<tr>标签大多数不是在同一行，所以要加 re.S和re.M多行匹配
             trs = re.findall(r"<tr>(.*?)</tr>", table, re.S | re.M)
-            for row in trs:
-                print("row: %s" % row)
+            for tr in trs:
+                # print("tr: %s" % tr)
+                ths = re.findall(r"<th>(.*?)</th>", tr, re.S | re.M)
+                for th in ths:
+                    if "<th>" in th:
+                        ths.extend(th.split('<th>'))
+                    print('th: %s' % th)
                 # 匹配<td></td>之间的内容
-                tds = re.findall(r"<td>(.*?)</td>", row, re.S | re.M)
+                tds = re.findall(r"<td>(.*?)</td>", tr, re.S | re.M)
                 for td in tds:
-                    print("-----------------------------------------------------------------------------------")
-                    print('td : %s' % td)
-                    print("-----------------------------------------------------------------------------------")
-            #     data_utils.insert_bazaar(tds[0], tds[1], tds[2], tds[3], tds[4], tds[5], tds[6])
+                    # data_utils.insert_bazaar(tds[0], tds[1], tds[2], tds[3], tds[4], tds[5], tds[6])
+                    # print("td: %s" % td)
+                    if td.startswith("<a "):
+                        href = re.findall(r"(?<=href=\").+?(?=\")|(?<=href=\').+?(?=\')", td, re.I | re.S | re.M)
+                        print("url: %s" % href)
+                    elif td.startswith("<img "):
+                        print("*" * 30)
+                    else:
+                        print("啥也没有")
 
     def start(self):
         self.get_url(1)

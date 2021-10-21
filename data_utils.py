@@ -4,6 +4,7 @@ import configparser
 import json
 from configparser import ConfigParser
 
+import pandas as pd
 import pymysql
 from dbutils.persistent_db import PersistentDB
 from dbutils.pooled_db import PooledDB
@@ -120,9 +121,9 @@ def merge_data():
     db_connect = db_pool.connection()
     db_cursor = db_connect.cursor()
     select_sql = "SELECT app_name,version_code,version_name,package_name,app_signature_v2,update_time, target_sdk,app_signature_v3 FROM antivirus GROUP BY package_name"
-    print('--------------------------------------------------------------')
+    print('-' * 50)
     print("\rselect_sql : %s , database name : %s" % (select_sql, db_pool))
-    print('--------------------------------------------------------------')
+    print('-' * 50)
     try:
         db_cursor.execute(select_sql)
         for result in db_cursor.fetchall():
@@ -152,6 +153,40 @@ def create_table():
                 ) ENGINE=InnoDB AUTO_INCREMENT=1376 DEFAULT CHARSET=utf8mb4"""
     print("\rcreate_sql : %s" % create_sql)
     db_cursor.execute(create_sql)
+    db_connect.close()
+
+
+def csv_mysql(csv_file_name):
+    # 用pandas读取csv
+    # data = pd.read_csv(file_name,engine='python',encoding='gbk')
+    data = pd.read_csv(csv_file_name, engine='python')
+    print(data.head(5))  # 打印前5行
+    db_pool = get_db_pool(True)
+    db_connect = db_pool.connection()
+    db_cursor = db_connect.cursor()
+    # 数据过滤，替换 nan 值为 None
+    data = data.astype(object).where(pd.notnull(data), None)
+
+    for first_seen_utc, sha256_hash, md5_hash, sha1_hash, reporter, file_name, file_type_guess, mime_type, signature, clamav, vtpercent, imphash, ssdeep, tlsh in zip(
+            data['first_seen_utc'], data['sha256_hash'], data['md5_hash'], data['sha1_hash'], data['reporter'], data['file_name'],
+            data['file_type_guess'], data['mime_type'], data['signature'], data['clamav'], data["vtpercent"], data['imphash'], data['ssdeep'], data['tlsh']):
+        data_list = [first_seen_utc, sha256_hash, md5_hash, sha1_hash, reporter, file_name, file_type_guess, mime_type, signature, clamav, vtpercent, imphash, ssdeep, tlsh]
+        data_list_trim = []
+        for index, data in enumerate(data_list, start=0):
+            print(index, data)
+            if isinstance(data, str):
+                data = data.strip()
+            try:
+                if index == 10:
+                    data.replace('"', '').replace('n/a', '0')
+                    print("index : 10 => %s" % data)
+                    data = float(data)
+            except:
+                data = 0.0
+            data_list_trim.append(data)
+        # print(data_list_trim)
+        insert_sql = "REPLACE INTO virus_bazaar(first_seen_utc,sha256_hash,md5_hash,sha1_hash,reporter,file_name,file_type_guess,mime_type,signature,clamav, vtpercent, imphash, ssdeep, tlsh) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s, %s, %s, %s, %s)"
+        db_cursor.execute(insert_sql, data_list_trim)
     db_connect.close()
 
 

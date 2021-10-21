@@ -3,31 +3,29 @@
 from datetime import datetime
 
 import data_utils
-from bazaar import bazaar
-from mobei import mobei
-from qihu import qihu
-from yyb import yyb
 
 if __name__ == '__main__':
     name = data_utils.parse_cfg('download', 'type', 'yyb')
     start_time = datetime.today().now()
     # data_utils.merge_data()
-    if name == 'qihu':
-        # 360 应用市场
-        a = qihu()
-        a.start()
-    elif name == 'yyb':
-        # 应用宝
-        b = yyb()
-        b.start()
-    else:
-        print('unsupported market : %s ' % name)
+    # if name == 'qihu':
+    #     # 360 应用市场
+    #     a = qihu()
+    #     a.start()
+    # elif name == 'yyb':
+    #     # 应用宝
+    #     b = yyb()
+    #     b.start()
+    # else:
+    #     print('unsupported market : %s ' % name)
 
-    m = mobei()
+    # m = mobei()
     # m.start()
-
-    b = bazaar()
-    b.start()
+    #
+    # b = bazaar()
+    # b.start()
+    data_utils.csv_mysql("./full.csv")
+    # viruscan.initialized()
 
     duration = datetime.today().now() - start_time
     print("duration : %s" % duration)
