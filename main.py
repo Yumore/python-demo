@@ -3,6 +3,7 @@
 from datetime import datetime
 
 import data_utils
+from bazaar import bazaar
 
 if __name__ == '__main__':
     name = data_utils.parse_cfg('download', 'type', 'yyb')
@@ -22,9 +23,8 @@ if __name__ == '__main__':
     # m = mobei()
     # m.start()
     #
-    # b = bazaar()
-    # b.start()
-    data_utils.csv_mysql("./full.csv")
+    b = bazaar()
+    b.start()
     # viruscan.initialized()
 
     duration = datetime.today().now() - start_time

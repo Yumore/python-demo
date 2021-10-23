@@ -59,18 +59,21 @@ def write_json(app_name, version_code, version_name, package_name, app_signature
 
 
 def insert_data(app_name, version_code, version_name, package_name, app_signature_v2, update_time, target_sdk, app_signature_v3):
-    db_pool = get_db_pool(True)
-    db_connect = db_pool.connection()
-    db_cursor = db_connect.cursor()
+    db_connect, db_cursor = open_db_connect()
     # insert ignore into
     insert_sql = "REPLACE INTO antivirus_temp(app_name,version_code,version_name,package_name,app_signature_v2,update_time,target_sdk,app_signature_v3) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"
     parser_sql = (app_name, version_name, version_code, package_name, app_signature_v2, update_time, target_sdk, app_signature_v3)
     print('--------------------------------------------------------------')
     print("\rinsert_sql : %s , parser_sql_v : %s" % (insert_sql, parser_sql))
     print('--------------------------------------------------------------')
+    write_data_mysql(db_connect, db_cursor, insert_sql, parser_sql)
+
+
+def write_data_mysql(db_connect, db_cursor, sql_string, data_parser):
     try:
-        db_cursor.execute(insert_sql, parser_sql)
+        db_cursor.execute(sql_string, data_parser)
         db_connect.commit()
+        db_cursor.close()
         print("\rinsert data finish")
     except Exception as e:
         db_connect.rollback()
@@ -79,17 +82,16 @@ def insert_data(app_name, version_code, version_name, package_name, app_signatur
 
 
 def insert_mobei(virus_name, virus_number, virus_level, virus_describe):
-    db_poll = get_db_pool(True)
-    db_connect = db_poll.connection()
-    db_cursor = db_connect.cursor()
+    db_connect, db_cursor = open_db_connect()
     insert_sql = "REPLACE INTO virus_sample(virus_name, virus_number, virus_level, virus_describe) VALUES (%s, %s, %s, %s)"
     parser_sql = (virus_name, virus_number, virus_level, virus_describe)
-    print('--------------------------------------------------------------')
-    print("\rinsert_sql : %s , parser_sql_v : %s" % (insert_sql, parser_sql))
-    print('--------------------------------------------------------------')
+    print('-' * 50)
+    print("\r insert_sql : %s , parser_sql_v : %s" % (insert_sql, parser_sql))
+    print('-' * 50)
     try:
         db_cursor.execute(insert_sql, parser_sql)
         db_connect.commit()
+        db_cursor.close()
         print("\rinsert data finish")
     except Exception as e:
         db_connect.rollback()
@@ -97,22 +99,39 @@ def insert_mobei(virus_name, virus_number, virus_level, virus_describe):
     db_connect.close()
 
 
-def insert_bazaar(update_time, sha256, type, signature, tags, reporter, link):
-    db_poll = get_db_pool(True)
-    db_connect = db_poll.connection()
-    db_cursor = db_connect.cursor()
-    insert_sql = "REPLACE INTO virus_bazaar(update_time, sha256, type, signature, tags, reporter, link) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-    parser_sql = (update_time, sha256, type, signature, type, reporter, link)
-    print('--------------------------------------------------------------')
-    print("\rinsert_sql : %s , parser_sql_v : %s" % (insert_sql, parser_sql))
-    print('--------------------------------------------------------------')
+def insert_bazaar(first_seen_utc, sha256_hash, md5_hash, sha1_hash, reporter, file_name, file_type_guess, mime_type, signature, clamav, vtpercent, imphash, ssdeep, tlsh, t1, t2, t3):
+    db_connect, db_cursor = open_db_connect()
+    insert_sql = "REPLACE INTO virus_bazaar(first_seen_utc,sha256_hash,md5_hash,sha1_hash,reporter,file_name,file_type_guess,mime_type,signature,clamav,vtpercent,imphash,ssdeep,tlsh,t1,t2,t3) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    parser_sql = (first_seen_utc, sha256_hash, md5_hash, sha1_hash, reporter, file_name, file_type_guess, mime_type, signature, clamav, vtpercent, imphash, ssdeep, tlsh, t1, t2, t3)
     try:
+        print('-' * 50)
+        print("\r insert_sql : %s , parser_sql : %s" % (insert_sql, parser_sql))
+        print('-' * 50)
         db_cursor.execute(insert_sql, parser_sql)
         db_connect.commit()
         print("\rinsert data finish")
     except Exception as e:
-        db_connect.rollback()
+        # db_connect.rollback()
         print("\rinsert data error :", e)
+    db_connect.close()
+
+
+def update_bazaar(sql_data):
+    db_poll = get_db_pool(True)
+    db_connect = db_poll.connection()
+    db_cursor = db_connect.cursor()
+    sql_string = "UPDATE virus_bazaar SET sample_link = %s, download_link = %s, tags = %s WHERE sha256_hash = %s"
+    data_parser = (sql_data[1], sql_data[3], sql_data[2], sql_data[0])
+    print('-' * 50)
+    print("\r sql_string : %s , data_parser : %s" % (sql_string, data_parser))
+    print('-' * 50)
+    try:
+        db_cursor.execute(sql_string, data_parser)
+        db_connect.commit()
+        db_cursor.close()
+    except Exception as e:
+        print("update data error:", e)
+        db_connect.rollback()
     db_connect.close()
 
 
@@ -167,27 +186,49 @@ def csv_mysql(csv_file_name):
     # 数据过滤，替换 nan 值为 None
     data = data.astype(object).where(pd.notnull(data), None)
 
-    for first_seen_utc, sha256_hash, md5_hash, sha1_hash, reporter, file_name, file_type_guess, mime_type, signature, clamav, vtpercent, imphash, ssdeep, tlsh in zip(
-            data['first_seen_utc'], data['sha256_hash'], data['md5_hash'], data['sha1_hash'], data['reporter'], data['file_name'],
-            data['file_type_guess'], data['mime_type'], data['signature'], data['clamav'], data["vtpercent"], data['imphash'], data['ssdeep'], data['tlsh']):
-        data_list = [first_seen_utc, sha256_hash, md5_hash, sha1_hash, reporter, file_name, file_type_guess, mime_type, signature, clamav, vtpercent, imphash, ssdeep, tlsh]
+    for first_seen_utc, sha256_hash, md5_hash, sha1_hash, reporter, file_name, file_type_guess, mime_type, signature, clamav, vtpercent, imphash, ssdeep, tlsh, t1, t2, sample_link, download_link, tags in zip(
+            data['first_seen_utc'], data['sha256_hash'], data['md5_hash'], data['sha1_hash'], data['reporter'], data['file_name'], data['file_type_guess'], data['mime_type'],
+            data['signature'], data['clamav'], data["vtpercent"], data['imphash'], data['ssdeep'], data['tlsh'], data['t1'], data['t2'], data['sample_link'], data['download_link'], data['tags']):
+        data_list = [first_seen_utc, sha256_hash, md5_hash, sha1_hash, reporter, file_name, file_type_guess, mime_type, signature, clamav, vtpercent, imphash, ssdeep, tlsh, t1, t2, sample_link, download_link, tags]
         data_list_trim = []
         for index, data in enumerate(data_list, start=0):
-            print(index, data)
             if isinstance(data, str):
+                data = data.replace('"', '')
                 data = data.strip()
-            try:
                 if index == 10:
-                    data.replace('"', '').replace('n/a', '0')
-                    print("index : 10 => %s" % data)
-                    data = float(data)
-            except:
-                data = 0.0
+                    try:
+                        data = data.replace('n/a', '0')
+                        print("index : 10 => %s" % data)
+                        data = float(data)
+                    except Exception as e:
+                        data = 0.0
+                        print("error : %s" % e)
             data_list_trim.append(data)
-        # print(data_list_trim)
-        insert_sql = "REPLACE INTO virus_bazaar(first_seen_utc,sha256_hash,md5_hash,sha1_hash,reporter,file_name,file_type_guess,mime_type,signature,clamav, vtpercent, imphash, ssdeep, tlsh) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s, %s, %s, %s, %s)"
-        db_cursor.execute(insert_sql, data_list_trim)
+        print("data_list_trim: %s" % data_list_trim)
+        insert_sql = "REPLACE INTO virus_bazaar(first_seen_utc,sha256_hash,md5_hash,sha1_hash,reporter,file_name,file_type_guess,mime_type,signature,clamav,vtpercent,imphash,ssdeep,tlsh,t1,t2,sample_link,download_link,tags) " \
+                     "VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        try:
+            print('-' * 50)
+            print('insert_sql: %s' % insert_sql)
+            print('-' * 50)
+            db_cursor.execute(insert_sql, data_list_trim)
+            db_connect.commit()
+            print("\rinsert data finish")
+        except Exception as e:
+            db_connect.rollback()
+            print("\rinsert data error :", e)
     db_connect.close()
+
+
+def insert_sql(sql_string, data_list, table_name):
+    print("sql_string => %s ,data_list => %s, table_name => %s" % (sql_string, str(data_list), table_name))
+
+
+def open_db_connect():
+    db_poll = get_db_pool(True)
+    db_connect = db_poll.connection()
+    db_cursor = db_connect.cursor()
+    return db_connect, db_cursor
 
 
 def get_host():
