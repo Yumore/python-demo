@@ -6,23 +6,16 @@ import data_utils
 
 class bazaar:
     def __init__(self):
-        self.url_list = []
         self.base_url = "https://bazaar.abuse.ch/browse/"
-        self.index = 0
 
-    def get_url(self, page):
-        for i in range(1, page + 1):
-            self.url_list.append(self.base_url)
-
-    def get_info(self):
-        for url in range(len(self.url_list)):
-            print(self.url_list[url])
-            response = request.urlopen(self.url_list[url])
-            html = response.read()
-            html = html.decode('utf-8')
-            self.parse_html(html)
+    def get_url(self):
+        response = request.urlopen(self.base_url)
+        html = response.read()
+        html = html.decode('utf-8')
+        self.parse_html(html)
 
     def parse_html(self, html):
+        print(html)
         tables = re.findall(r"<table.*?>.*?</table>", html, re.M | re.S)
         for table in tables:
             # print(table)
@@ -78,11 +71,9 @@ class bazaar:
                             sql_data.extend(href_list)
                         # else:
                         # print("-" * 5 + ">", td)
-
                     print("sql_data: %s" % sql_data)
                     data_utils.update_bazaar(sql_data)
 
     def start(self):
         # data_utils.csv_mysql("./full-back.csv")
-        self.get_url(4)
-        self.get_info()
+        self.get_url()

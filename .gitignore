@@ -130,7 +130,5 @@ dmypy.json
 
 .idea
 
-full.csv
-full-back.csv
-antivirus.sql
-data.json
+*.csv
+*.json

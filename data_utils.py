@@ -69,18 +69,6 @@ def insert_data(app_name, version_code, version_name, package_name, app_signatur
     write_data_mysql(db_connect, db_cursor, insert_sql, parser_sql)
 
 
-def write_data_mysql(db_connect, db_cursor, sql_string, data_parser):
-    try:
-        db_cursor.execute(sql_string, data_parser)
-        db_connect.commit()
-        db_cursor.close()
-        print("\rinsert data finish")
-    except Exception as e:
-        db_connect.rollback()
-        print("\rinsert data error :", e)
-    db_connect.close()
-
-
 def insert_mobei(virus_name, virus_number, virus_level, virus_describe):
     db_connect, db_cursor = open_db_connect()
     insert_sql = "REPLACE INTO virus_sample(virus_name, virus_number, virus_level, virus_describe) VALUES (%s, %s, %s, %s)"
@@ -91,12 +79,11 @@ def insert_mobei(virus_name, virus_number, virus_level, virus_describe):
     try:
         db_cursor.execute(insert_sql, parser_sql)
         db_connect.commit()
-        db_cursor.close()
         print("\rinsert data finish")
     except Exception as e:
         db_connect.rollback()
         print("\rinsert data error :", e)
-    db_connect.close()
+    close_db_connect(db_connect, db_cursor)
 
 
 def insert_bazaar(first_seen_utc, sha256_hash, md5_hash, sha1_hash, reporter, file_name, file_type_guess, mime_type, signature, clamav, vtpercent, imphash, ssdeep, tlsh, t1, t2, t3):
@@ -111,15 +98,17 @@ def insert_bazaar(first_seen_utc, sha256_hash, md5_hash, sha1_hash, reporter, fi
         db_connect.commit()
         print("\rinsert data finish")
     except Exception as e:
-        # db_connect.rollback()
+        db_connect.rollback()
         print("\rinsert data error :", e)
-    db_connect.close()
+    close_db_connect(db_connect, db_cursor)
 
 
 def update_bazaar(sql_data):
-    db_poll = get_db_pool(True)
-    db_connect = db_poll.connection()
-    db_cursor = db_connect.cursor()
+    db_connect, db_cursor = open_db_connect()
+    select_sql = "select * from virus_bazaar where sha256_hash=%s"
+    results = db_cursor.fetchall(select_sql, sql_data[0])
+    for result in results:
+        print("select from mysql: %s" % result)
     sql_string = "UPDATE virus_bazaar SET sample_link = %s, download_link = %s, tags = %s WHERE sha256_hash = %s"
     data_parser = (sql_data[1], sql_data[3], sql_data[2], sql_data[0])
     print('-' * 50)
@@ -128,29 +117,26 @@ def update_bazaar(sql_data):
     try:
         db_cursor.execute(sql_string, data_parser)
         db_connect.commit()
-        db_cursor.close()
     except Exception as e:
         print("update data error:", e)
         db_connect.rollback()
-    db_connect.close()
+    # close_db_connect(db_connect, db_cursor)
 
 
 def merge_data():
-    db_pool = get_db_pool(True)
-    db_connect = db_pool.connection()
-    db_cursor = db_connect.cursor()
+    db_connect, db_cursor = open_db_connect()
     select_sql = "SELECT app_name,version_code,version_name,package_name,app_signature_v2,update_time, target_sdk,app_signature_v3 FROM antivirus GROUP BY package_name"
     print('-' * 50)
-    print("\rselect_sql : %s , database name : %s" % (select_sql, db_pool))
+    print("\r select_sql : %s" % select_sql)
     print('-' * 50)
     try:
         db_cursor.execute(select_sql)
         for result in db_cursor.fetchall():
             insert_data(result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7])
     except Exception as e:
-        db_cursor.close()
+        db_connect.rollback()
         print("exception >> %s" % str(e))
-    db_connect.close()
+    close_db_connect(db_connect, db_cursor)
 
 
 def create_table():
@@ -180,9 +166,7 @@ def csv_mysql(csv_file_name):
     # data = pd.read_csv(file_name,engine='python',encoding='gbk')
     data = pd.read_csv(csv_file_name, engine='python')
     print(data.head(5))  # 打印前5行
-    db_pool = get_db_pool(True)
-    db_connect = db_pool.connection()
-    db_cursor = db_connect.cursor()
+    db_connect, db_cursor = open_db_connect()
     # 数据过滤，替换 nan 值为 None
     data = data.astype(object).where(pd.notnull(data), None)
 
@@ -217,11 +201,46 @@ def csv_mysql(csv_file_name):
         except Exception as e:
             db_connect.rollback()
             print("\rinsert data error :", e)
-    db_connect.close()
+    close_db_connect(db_connect, db_cursor)
+
+
+def permission_csv_mysql(csv_file_name):
+    data = pd.read_csv(csv_file_name, engine='python')
+    print(data.head(5))  # 打印前5行
+    db_connect, db_cursor = open_db_connect()
+    # 数据过滤，替换 nan 值为 None
+    data = data.astype(object).where(pd.notnull(data), None)
+
+    for permission, name_cn, name_desc in zip(data['permission'], data['name_cn'], data['name_desc']):
+        data_list = [permission, name_cn, name_desc]
+        insert_sql = "REPLACE INTO permissions(permission_en,permission_cn,permission_desc) VALUES(%s, %s, %s)"
+        try:
+            print('-' * 50)
+            print('insert_sql: %s' % insert_sql)
+            print('-' * 50)
+            db_cursor.execute(insert_sql, data_list)
+            db_connect.commit()
+            print("\rinsert data finish")
+        except Exception as e:
+            db_connect.rollback()
+            print("\rinsert data error :", e)
+    close_db_connect(db_connect, db_cursor)
 
 
 def insert_sql(sql_string, data_list, table_name):
     print("sql_string => %s ,data_list => %s, table_name => %s" % (sql_string, str(data_list), table_name))
+
+
+def write_data_mysql(db_connect, db_cursor, sql_string, data_parser):
+    try:
+        db_cursor.execute(sql_string, data_parser)
+        db_connect.commit()
+        print("\rinsert data finish")
+    except Exception as e:
+        db_connect.rollback()
+        print("\rinsert data error :", e)
+    db_cursor.close()
+    db_connect.close()
 
 
 def open_db_connect():
@@ -229,6 +248,11 @@ def open_db_connect():
     db_connect = db_poll.connection()
     db_cursor = db_connect.cursor()
     return db_connect, db_cursor
+
+
+def close_db_connect(db_connect, db_cursor):
+    db_cursor.close()
+    db_connect.close()
 
 
 def get_host():

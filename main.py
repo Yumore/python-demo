@@ -9,6 +9,7 @@ if __name__ == '__main__':
     name = data_utils.parse_cfg('download', 'type', 'yyb')
     start_time = datetime.today().now()
     # data_utils.merge_data()
+    # data_utils.permission_csv_mysql('./permission.csv')
     # if name == 'qihu':
     #     # 360 应用市场
     #     a = qihu()
