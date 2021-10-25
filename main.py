@@ -4,6 +4,7 @@ from datetime import datetime
 
 import data_utils
 from bazaar import bazaar
+from virus_scan import virus_scan
 
 if __name__ == '__main__':
     name = data_utils.parse_cfg('download', 'type', 'yyb')
@@ -25,7 +26,9 @@ if __name__ == '__main__':
     # m.start()
     #
     b = bazaar()
-    b.start()
+    # b.start()
+    vs = virus_scan()
+    vs.start()
     # viruscan.initialized()
 
     duration = datetime.today().now() - start_time

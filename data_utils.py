@@ -105,12 +105,8 @@ def insert_bazaar(first_seen_utc, sha256_hash, md5_hash, sha1_hash, reporter, fi
 
 def update_bazaar(sql_data):
     db_connect, db_cursor = open_db_connect()
-    select_sql = "select * from virus_bazaar where sha256_hash=%s"
-    results = db_cursor.fetchall(select_sql, sql_data[0])
-    for result in results:
-        print("select from mysql: %s" % result)
-    sql_string = "UPDATE virus_bazaar SET sample_link = %s, download_link = %s, tags = %s WHERE sha256_hash = %s"
-    data_parser = (sql_data[1], sql_data[3], sql_data[2], sql_data[0])
+    sql_string = "REPLACE INTO virus_bazaar_temp(sha256_hash, sample_link, tags, download_link)VALUES(%s, %s, %s, %s)"
+    data_parser = (sql_data[0], sql_data[1], sql_data[2], sql_data[3])
     print('-' * 50)
     print("\r sql_string : %s , data_parser : %s" % (sql_string, data_parser))
     print('-' * 50)
@@ -120,8 +116,7 @@ def update_bazaar(sql_data):
     except Exception as e:
         print("update data error:", e)
         db_connect.rollback()
-    # close_db_connect(db_connect, db_cursor)
-
+    close_db_connect(db_connect, db_cursor)
 
 def merge_data():
     db_connect, db_cursor = open_db_connect()

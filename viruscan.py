@@ -96,7 +96,8 @@ def getAndroidVirusReport(web_url):
             if max_page_num < int(num_str):
                 max_page_num = int(num_str)
 
-        except:
+        except Exception as e:
+            print(e)
             continue
     print('found max page:' + str(max_page_num))
 
