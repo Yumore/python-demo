@@ -19,15 +19,15 @@ def parse_cfg(section, key, default_value):
         return conf_parser.get(section, key)
 
 
-def write_data(app_name, version_code, version_name, package_name, app_signature_v2, update_time, target_sdk, app_signature_v3):
+def write_data(app_name, version_code, version_name, package_name, app_signature_v2, update_time, target_sdk, app_signature_v3, category):
     data_type = parse_cfg("database", "type", "mysql")
     if data_type == "json":
-        write_json(app_name, version_code, version_name, package_name, app_signature_v2, update_time, target_sdk, app_signature_v3)
+        write_json(app_name, version_code, version_name, package_name, app_signature_v2, update_time, target_sdk, app_signature_v3, category)
     else:
-        insert_data(app_name, version_code, version_name, package_name, app_signature_v2, update_time, target_sdk, app_signature_v3)
+        insert_data(app_name, version_code, version_name, package_name, app_signature_v2, update_time, target_sdk, app_signature_v3, category)
 
 
-def write_json(app_name, version_code, version_name, package_name, app_signature_v2, update_time, target_sdk, app_signature_v3):
+def write_json(app_name, version_code, version_name, package_name, app_signature_v2, update_time, target_sdk, app_signature_v3, category):
     # dumps和loads是在内存中转换（python对象和json字符串之间的转换），而dump和load则是对应于文件的处理
     with open("./data.json", 'r', encoding='utf-8') as file_r:
         json_data = json.load(file_r)
@@ -51,6 +51,7 @@ def write_json(app_name, version_code, version_name, package_name, app_signature
             json_object["update_time"] = update_time
             json_object["target_sdk"] = target_sdk
             json_object["app_signature_v3"] = app_signature_v3
+            json_object["category"] = category
             json_text.append(json_object)
         print(json_text)
 
@@ -58,11 +59,11 @@ def write_json(app_name, version_code, version_name, package_name, app_signature
         json.dump(json_text, file_w, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ':'))
 
 
-def insert_data(app_name, version_code, version_name, package_name, app_signature_v2, update_time, target_sdk, app_signature_v3):
+def insert_data(app_name, version_code, version_name, package_name, app_signature_v2, update_time, target_sdk, app_signature_v3, category):
     db_connect, db_cursor = open_db_connect()
     # insert ignore into
-    insert_sql = "REPLACE INTO antivirus_temp(app_name,version_code,version_name,package_name,app_signature_v2,update_time,target_sdk,app_signature_v3) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"
-    parser_sql = (app_name, version_name, version_code, package_name, app_signature_v2, update_time, target_sdk, app_signature_v3)
+    insert_sql = "REPLACE INTO antivirus(app_name,version_code,version_name,package_name,app_signature_v2,update_time,target_sdk,app_signature_v3, category) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+    parser_sql = (app_name, version_name, version_code, package_name, app_signature_v2, update_time, target_sdk, app_signature_v3, category)
     print('--------------------------------------------------------------')
     print("\rinsert_sql : %s , parser_sql_v : %s" % (insert_sql, parser_sql))
     print('--------------------------------------------------------------')
@@ -138,8 +139,8 @@ def create_table():
     db_pool = get_db_pool(True)
     db_connect = db_pool.connection()
     db_cursor = db_connect.cursor()
-    db_cursor.execute("DROP TABLE IF EXISTS antivirus_temp")
-    create_sql = """CREATE TABLE `antivirus_temp` (
+    db_cursor.execute("DROP TABLE IF EXISTS antivirus")
+    create_sql = """CREATE TABLE `antivirus` (
                   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
                   `version_code` varchar(255) DEFAULT NULL,
                   `version_name` varchar(255) DEFAULT NULL,

@@ -5,6 +5,8 @@ from urllib import request, parse
 import requests
 from bs4 import BeautifulSoup
 
+import data_utils
+
 
 def parser_apks(self, count=0):
     _root_url = "http://app.mi.com"  # 应用市场主页网址
@@ -37,11 +39,9 @@ def parser_apks(self, count=0):
     return res_parser
 
 
-def craw_apks(self, count=1, save_path="d:\\\\apk\\\\"):
+def craw_apks(self, count=1, save_path=data_utils.parse_cfg('download', 'path', '../apks')):
     res_dic = parser_apks(count)
     for apk in res_dic.keys():
         print("正在下载应用: " + apk)
         request.urlretrieve(res_dic[apk], save_path + apk + ".apk")
         print("下载完成")
-
-# craw_apks(10)

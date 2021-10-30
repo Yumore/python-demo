@@ -4,12 +4,29 @@ from urllib import request
 import data_utils
 
 
+# headers = {
+#     'Accept': '*/*',
+#     'Accept-Language': 'en-US,en;q=0.8',
+#     'Cache-Control': 'max-age=0',
+#     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36',
+#     'Connection': 'keep-alive',
+#     'Referer': 'http://www.baidu.com/'
+# }
+
 class bazaar:
     def __init__(self):
         self.base_url = "https://bazaar.abuse.ch/browse/"
 
     def get_url(self):
-        response = request.urlopen(self.base_url)
+        headers = {'Accept': '*/*',
+                   'Accept-Language': 'en-US,en;q=0.8',
+                   'Cache-Control': 'max-age=0',
+                   'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36',
+                   'Connection': 'keep-alive',
+                   'Referer': 'http://www.baidu.com/'
+                   }
+        requests = request.Request(self.base_url, None, headers);
+        response = request.urlopen(requests)
         html = response.read()
         html = html.decode('utf-8')
         self.parse_html(html)

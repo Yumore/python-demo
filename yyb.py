@@ -15,6 +15,7 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36'
 }
 category = [-10, 122, 102, 110, 103, 108, 115, 106, 101, 119, 104, 114, 117, 107, 112, 118, 111, 109, 105, 100, 113, 116]
+category_names = ['腾讯软件', '阅读', '新闻', '视频', '旅游', '工具', '社交', '音乐', '美化', '摄影', '理财', '系统', '生活', '出行', '安全', '教育', '健康', '娱乐', '健康', '儿童', '办公', '通讯']
 thread_count = len(category)
 lock = threading.Lock()
 
@@ -33,7 +34,7 @@ class yyb:
             self.url_list.append(self.baseurl + str(page))
         self.url_list.append(self.baseurl + str(-10))
 
-    def download(self, url):
+    def download(self, url, index):
         print('\rdownload url is : %s' % url)
         file_name = url.split('=')[1]
         file_name = file_name.split('&')[0]
@@ -43,6 +44,7 @@ class yyb:
             while count <= 5:
                 try:
                     print('\rtry to download %s with %d times' % (file_path, count))
+
                     # os.chmod(self.download_path, stat.S_IRWXO + stat.S_IRWXG | stat.S_IRWXU)
 
                     def reporthook(block_num, block_size, block_total):
@@ -58,7 +60,7 @@ class yyb:
                 print('\ndownload failed!')
         else:
             print('\nfile already exists! file path is : %s' % file_path)
-            apk_info.get_apk_info(file_path)
+            apk_info.get_apk_info(file_path, category_names[index])
 
     def spider(self):
         for index in range(len(self.url_list)):
@@ -73,14 +75,14 @@ class yyb:
                         tmp = tmp.split('"')[0]
                         link_list.append(tmp)
 
-                self.single_thread(link_list)
+                self.single_thread(link_list, index)
 
             except Exception as e:
                 print("exception : %s" % str(e))
 
-    def single_thread(self, link_list):
+    def single_thread(self, link_list, index):
         for url in link_list:
-            self.download(url=url)
+            self.download(url, index)
 
     def multi_threads(self):
         print('thread %s is running ... ' % threading.currentThread().getName())

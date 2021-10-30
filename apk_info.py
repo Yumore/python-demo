@@ -24,7 +24,7 @@ def get_cert_md5_v3(android_guard):
     return cert_md5
 
 
-def get_apk_info(apk_path):
+def get_apk_info(apk_path, category):
     print('\rget apk info -> file path : %s' % apk_path)
     try:
         android_guard = APK(apk_path)
@@ -38,6 +38,6 @@ def get_apk_info(apk_path):
             target_sdk = android_guard.get_target_sdk_version()
             app_signature_v3 = get_cert_md5_v3(android_guard)
             permissions_declare = android_guard.get_permissions()
-            data_utils.write_data(app_name, version_name, version_code, package_name, app_signature_v2, update_time, target_sdk, app_signature_v3)
+            data_utils.write_data(app_name, version_name, version_code, package_name, app_signature_v2, update_time, target_sdk, app_signature_v3, category)
     except Exception as e:
         print('\rget apk info : exception >>', e)
