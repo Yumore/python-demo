@@ -50,7 +50,7 @@ class yyb:
                     def reporthook(block_num, block_size, block_total):
                         print('\rdownload progress: %.2f%%' % (block_num * block_size * 100.0 / block_total), end="")
 
-                    self.down_real(url=url, file_path=file_path, reporthook=reporthook)
+                    self.down_real(url=url, file_path=file_path, reporthook=reporthook, category=category_names[index])
                     break
                 except socket.timeout:
                     err_info = '\nReloading for %d time' % count if count == 1 else 'Reloading for %d times' % count
@@ -97,9 +97,9 @@ class yyb:
                 print('exception %s' % str(e))
             print('thread %s is ending ... ' % threading.currentThread().getName())
 
-    def down_real(self, url, file_path, reporthook):
+    def down_real(self, url, file_path, reporthook, category):
         request.urlretrieve(url, file_path, reporthook)
-        apk_info.get_apk_info(file_path)
+        apk_info.get_apk_info(file_path, category)
         print('\ndownload finished!')
         request.urlcleanup()
         file_size = os.path.getsize(file_path)

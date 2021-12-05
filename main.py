@@ -6,7 +6,7 @@ import data_utils
 from bazaar import bazaar
 from mobei import mobei
 from qihu import qihu
-from virus_scan import virus_scan
+from virusscan import virusscan
 from yyb import yyb
 
 if __name__ == '__main__':
@@ -14,6 +14,7 @@ if __name__ == '__main__':
     start_time = datetime.today().now()
     # data_utils.merge_data()
     # data_utils.permission_csv_mysql('./permission.csv')
+    # data_utils.csv_mysql('./full.csv')
     if name == 'qihu':
         # 360 应用市场
         a = qihu()
@@ -27,12 +28,11 @@ if __name__ == '__main__':
 
     m = mobei()
     # m.start()
-    #
+
     b = bazaar()
     # b.start()
-    vs = virus_scan()
-    # vs.start()
-    # viruscan.initialized()
+    vs = virusscan()
+    vs.start()
 
     duration = datetime.today().now() - start_time
     print("duration : %s" % duration)

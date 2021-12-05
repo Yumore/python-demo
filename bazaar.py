@@ -10,6 +10,7 @@ import data_utils
 #     'Cache-Control': 'max-age=0',
 #     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36',
 #     'Connection': 'keep-alive',
+# https://www.hxcpp78.com/?id=17167
 #     'Referer': 'http://www.baidu.com/'
 # }
 
