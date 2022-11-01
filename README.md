@@ -1,64 +1,53 @@
-# 免责声明
+# language-tools
 
-该项目仅做学习交流使用，请勿用做商务用途
+多语言脚本处理工具
 
-若用在商务用途上引起的任何纠纷由使用者自行承担
+# 食用方式
 
-若本项目有损害您的相关利益，请及时告知，以便沟通交流
+## 1. 导入语言包
 
-## 项目说明
+将 `nr_common_resource` 工程中 `lib/language` 下的文件目录考入本工程的根目录
 
-使用Python批量下载apk文件并获取包名和应用签名
+## 2.安装依赖
 
-## 环境
+执行`pip install -r requirements.txt` 安装所需要的依赖
 
-Python3.6+ MySQL 可选
+## 导入产品翻译源
 
-> 安装Python环境
->
-> Windows 从官网下载Python安装包，并配置环境变量，最好是3.6以上版本
->
-> 在命令行输入 `python -V` 和 `pip -V` 查看配置的环境变量是否正确
->
-> Linux和MacOS需要安装Python3.6以上版本
->
-> MacOS：`brew install python3`
->
-> Linux：`apt install python3`
+访问[产品翻译石墨文档](https://shimo.narwal.com/sheets/3yJ3vwX6UAIHJtO5/BZ5yB)
 
-以上如有问题请自行百度或者 <a herf="mailto:nathanwriting@126.com">联系我</a>
+将需要比对的数据复制到 `execls/translate.xls` 各个sheet中
 
-## 目录结构
+执行脚本 `python main.py`
 
-    ├── antivirus.sql 已有mysql, 但没有去重
-    ├── apk_info.py 解析apk文件信息
-    ├── class_360.py 360 测试脚本
-    ├── class_YYB.py 应用宝测试脚本
-    ├── data.json 本地保存json
-    ├── data_utils.py 数据存储工具类
-    ├── file_utils.py 文件工具类
-    ├── get_apk.py  下载文件测试工具类
-    ├── get_apk_info.py 获取本地文件信息工具类
-    ├── main.py 主入口文件
-    ├── qihu.py 360下载类
-    ├── requirements.txt 依赖库
-    ├── sample.cfg 配置文件
-    └── yyb.py 应用宝下载类
+# 文件目录
 
-## 配置下载目录
+- execls -- execl 文件路径
+- main.py -- 脚本主入口
+- utility -- 需要用到的工具类
+- utility/configs.py 配置信息
 
-> 修改[sample.cfg](./sample.cfg)文件即可
->
->如果没有安装MySQL 建议不要修改相关配置
->
-> 所生成数据会存在[data.json](./data.json)中
+# 实现想法
 
-## 如何使用
+- 解析 excel 文件翻译文件数据 key-value 格式
+    - 一个 key 对应不同的语音
+- 解析 dart 文件生成 key-value 的词条
+    - 通过 dart 文件的 key 查询翻译文档的校对数据
+    - 文件中所有的 key 对应的 value 校对之后写入文件
+- 通过比对工具合并到工程中,防止出错
 
-> 1. 安装依赖
->
->1.1 Windows 在cmd中输入`pip install -r requirements.txt`
->
->1.2 MacOS和Linux在Terminal输入 `pip install -r requirements.txt`
->
->2. 执行 `python3 main.py`
+# 遇到的问题
+
+1. 's 't 'll 've 会导致写入 dart 文件之后报错
+
+- 解决方案 将这些特殊的数据转义后写入 dart
+- 在解析翻译文件的时候先转义
+
+2. 翻译文档中 key-values 直接写如内存,导致脚本操作很慢
+
+- 使用结构化数据且能独立操作的数据--sqlite
+- 可单独存储每一种语言和翻译总表
+- 可实现一对一 和 一对多的数据关系
+- 能将结果保存并方便后续增量更新
+
+    

@@ -1,40 +1,22 @@
-#!/usr/bin/python3
+# !/usr/bin/python3
 # -*- coding: utf-8 -*-
-from datetime import datetime
+import logging
+import os
+import time
 
-import data_utils
-from bazaar import bazaar
-from mobei import mobei
-from qihu import qihu
-from virusscan import virusscan
-from yyb import yyb
+from utility import fileutil, dartutil, execlutil
 
 if __name__ == '__main__':
-    name = data_utils.parse_cfg('download', 'type', 'yyb')
-    start_time = datetime.today().now()
-    # data_utils.merge_data()
-    # data_utils.permission_csv_mysql('./permission.csv')
-    # data_utils.csv_mysql('./full.csv')
-    if name == 'qihu':
-        # 360 应用市场
-        a = qihu()
-        a.start()
-    elif name == 'yyb':
-        # 应用宝
-        b = yyb()
-        b.start()
-    else:
-        print('unsupported market : %s ' % name)
-
-    m = mobei()
-    # m.start()
-
-    b = bazaar()
-    # b.start()
-    vs = virusscan()
-    vs.start()
-
-    duration = datetime.today().now() - start_time
-    print("duration : %s" % duration)
-
-# python download_samples.py  --virustotal --vtapikey 1a7b7440ceca037b88fd160ef6c8e04b69ba434bdd76ef2ab0ab52a567xxxxx
+    LOG_FILE = 'logger.log'
+    LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
+    DATE_FORMAT = "%m/%d/%Y %H:%M:%S %p"
+    # logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG, format=LOG_FORMAT)
+    logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT)
+    millis = int(round(time.time() * 1000))
+    # 解析早版本的execl文件
+    execlutil.parse_translate(os.getcwd())
+    dartutil.foreach_local(os.getcwd())
+    execlutil.generate_result(os.getcwd(), True)
+    # csvutil.convert_csv2py(os.getcwd(), 'dingshi.csv')
+    use_time = int(round(time.time() * 1000)) - millis
+    fileutil.format_logger("任务耗时", "{:.2f}秒".format(use_time / 1000))
