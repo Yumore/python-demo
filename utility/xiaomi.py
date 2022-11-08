@@ -2,9 +2,10 @@
 import re
 from urllib import request, parse
 
-import data_utils
 import requests
 from bs4 import BeautifulSoup
+
+import data_utils
 
 
 def parser_apks(self, count=0):

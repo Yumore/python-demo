@@ -6,9 +6,8 @@ import socket
 import threading
 from urllib import request
 
-import data_utils
-
 import apk_info
+import data_utils
 import file_utils
 
 socket.setdefaulttimeout(30)

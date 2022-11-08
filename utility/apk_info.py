@@ -3,8 +3,9 @@
 import hashlib
 import time
 
-import data_utils
 from androguard.core.bytecodes.apk import APK
+
+import data_utils
 
 
 def get_cert_md5_v2(android_guard):
