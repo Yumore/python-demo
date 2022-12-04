@@ -119,7 +119,6 @@ def update_bazaar(sql_data):
         db_connect.rollback()
     close_db_connect(db_connect, db_cursor)
 
-
 def merge_data():
     db_connect, db_cursor = open_db_connect()
     select_sql = "SELECT app_name,version_code,version_name,package_name,app_signature_v2,update_time, target_sdk,app_signature_v3 FROM antivirus GROUP BY package_name"
@@ -170,8 +169,7 @@ def csv_mysql(csv_file_name):
     for first_seen_utc, sha256_hash, md5_hash, sha1_hash, reporter, file_name, file_type_guess, mime_type, signature, clamav, vtpercent, imphash, ssdeep, tlsh, t1, t2, sample_link, download_link, tags in zip(
             data['first_seen_utc'], data['sha256_hash'], data['md5_hash'], data['sha1_hash'], data['reporter'], data['file_name'], data['file_type_guess'], data['mime_type'],
             data['signature'], data['clamav'], data["vtpercent"], data['imphash'], data['ssdeep'], data['tlsh'], data['t1'], data['t2'], data['sample_link'], data['download_link'], data['tags']):
-        data_list = [first_seen_utc, sha256_hash, md5_hash, sha1_hash, reporter, file_name, file_type_guess, mime_type, signature, clamav, vtpercent, imphash, ssdeep, tlsh, t1, t2, sample_link,
-                     download_link, tags]
+        data_list = [first_seen_utc, sha256_hash, md5_hash, sha1_hash, reporter, file_name, file_type_guess, mime_type, signature, clamav, vtpercent, imphash, ssdeep, tlsh, t1, t2, sample_link, download_link, tags]
         data_list_trim = []
         for index, data in enumerate(data_list, start=0):
             if isinstance(data, str):

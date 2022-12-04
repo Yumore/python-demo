@@ -1,7 +1,7 @@
 import re
 from urllib import request
 
-import data_utils
+from utility import data_utils
 
 
 class mobei:

@@ -5,7 +5,7 @@ from urllib import request, parse
 import requests
 from bs4 import BeautifulSoup
 
-import data_utils
+from utility import data_utils
 
 
 def parser_apks(self, count=0):
