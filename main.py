@@ -17,6 +17,6 @@ if __name__ == '__main__':
     execlutil.parse_translate(os.getcwd())
     dartutil.foreach_local(os.getcwd())
     execlutil.generate_result(os.getcwd(), True)
-    # csvutil.convert_csv2py(os.getcwd(), 'dingshi.csv')
+
     use_time = int(round(time.time() * 1000)) - millis
     fileutil.format_logger("任务耗时", "{:.2f}秒".format(use_time / 1000))
