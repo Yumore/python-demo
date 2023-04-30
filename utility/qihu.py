@@ -6,7 +6,9 @@ import socket
 from urllib import request
 from urllib.error import ContentTooShortError
 
-from utility import file_utils, data_utils, apk_info
+import apk_info
+import data_utils
+import file_utils
 
 socket.setdefaulttimeout(30)
 

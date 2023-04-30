@@ -1,11 +1,10 @@
 # coding=utf-8
 import re
-from urllib import request, parse
-
 import requests
 from bs4 import BeautifulSoup
+from urllib import request, parse
 
-from utility import data_utils
+import data_utils
 
 
 def parser_apks(self, count=0):

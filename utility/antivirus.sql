@@ -29,7 +29,7 @@ CREATE TABLE `antivirus`
     `app_name`         varchar(255) DEFAULT NULL,
     `package_name`     varchar(255) NOT NULL,
     `app_signature_v2` varchar(255) DEFAULT NULL,
-    `update_time`      bigint(50)   DEFAULT NULL,
+    `update_time`      bigint(50) DEFAULT NULL,
     `app_signature_v3` varchar(255) DEFAULT NULL,
     `target_sdk`       varchar(255) DEFAULT NULL,
     PRIMARY KEY (`id`)
