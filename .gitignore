@@ -1,9 +1,3 @@
 .idea
-*.csv
-*.json
-*.xls
-backup
 *.dart
 venv
-*.db
-real-url

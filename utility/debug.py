@@ -1,0 +1,2 @@
+def debuggable():
+    return True

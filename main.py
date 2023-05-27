@@ -4,7 +4,7 @@ import logging
 import os
 import time
 
-from utility import fileutil, dartutil, execlutil
+from utility import fileUtils, csvUtils
 
 if __name__ == '__main__':
     LOG_FILE = 'logger.log'
@@ -13,10 +13,8 @@ if __name__ == '__main__':
     # logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG, format=LOG_FORMAT)
     logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT)
     millis = int(round(time.time() * 1000))
-    # 解析早版本的execl文件
-    execlutil.parse_translate(os.getcwd())
-    dartutil.foreach_local(os.getcwd())
-    execlutil.generate_result(os.getcwd(), True)
+
+    csvUtils.read_csv("{}/files/PRO_7003A.csv".format(os.getcwd()))
 
     use_time = int(round(time.time() * 1000)) - millis
-    fileutil.format_logger("任务耗时", "{:.2f}秒".format(use_time / 1000))
+    fileUtils.format_logger("任务耗时", "{:.2f}秒".format(use_time / 1000))

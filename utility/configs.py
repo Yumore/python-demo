@@ -11,6 +11,13 @@ def_prefix = 'zh_hans'
 def_zhTW = 'zh-tw'
 def_wifi = ['wifi', 'WiFi', 'WIFI', 'wi-fi']
 
+issueTable = "issues"
+departTable = "employees"
+debuggable = True
+# status
+issueDoing = ["New", "InProgress", "Reopen", "Reviewed"]
+issueFinish = ["Resolved", "Cancel1", "Cancel2", "Reject", "Closed"]
+
 
 def convert_lang(prefix):
     if prefix == 'zh_hans':
