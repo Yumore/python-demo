@@ -1,10 +1,15 @@
 # !/usr/bin/python3
 # -*- coding: utf-8 -*-
 import logging
-import os
 import time
 
-from utility import fileUtils, csvUtils
+from gits import py4git
+from utility import fileUtils
+
+
+def test_shell():
+    py4git.list_repos()
+
 
 if __name__ == '__main__':
     LOG_FILE = 'logger.log'
@@ -14,7 +19,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT)
     millis = int(round(time.time() * 1000))
 
-    csvUtils.read_csv("{}/files/PRO_7003A.csv".format(os.getcwd()))
+    test_shell()
 
     use_time = int(round(time.time() * 1000)) - millis
     fileUtils.format_logger("任务耗时", "{:.2f}秒".format(use_time / 1000))
