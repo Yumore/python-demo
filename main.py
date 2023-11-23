@@ -3,6 +3,7 @@
 import logging
 import time
 
+from drivers import driverExam
 from gits import py4git
 from utility import fileUtils
 
@@ -19,7 +20,9 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT)
     millis = int(round(time.time() * 1000))
 
-    test_shell()
+    # test_shell()
+
+    driverExam.getExams()
 
     use_time = int(round(time.time() * 1000)) - millis
     fileUtils.format_logger("任务耗时", "{:.2f}秒".format(use_time / 1000))
