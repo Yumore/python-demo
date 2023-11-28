@@ -6,8 +6,10 @@ import os
 import pandas
 from poprogress import simple_progress
 
+from configs import configs
+from database import sqlitex
 # 遍历指定目录下的指定前缀和后缀文件
-from utility import configs, langUtils, sqliteUtils
+from utility import langUtils
 
 
 def find_files(path, prefix, extend):
@@ -135,10 +137,10 @@ def write_xlsx(proj_name, xls_path, dataframes):
 
 def parse_depart(csv_path):
     arg_ele = langUtils.chinese2pinyin("指派给")
-    employees = sqliteUtils.query_distinct(arg_ele)
+    employees = sqlitex.query_distinct(arg_ele)
     format_logger("parse_depart", "employees is {}".format(employees))
     sql_string = "CREATE TABLE IF NOT EXISTS {}(employee TEXT PRIMARY KEY, depart TEXT);".format(configs.departTable)
-    sqliteUtils.create_table(sql_string)
+    sqlitex.create_table(sql_string)
     for employee in employees:
         depart = "内部未查"
         if '-' in employee:
@@ -146,7 +148,7 @@ def parse_depart(csv_path):
             employee = strings[0]
             depart = "第三方"
         sql_string = "REPLACE INTO {} VALUES('{}','{}');".format(configs.departTable, employee, depart)
-        sqliteUtils.replace_data(sql_string)
+        sqlitex.replace_data(sql_string)
     # 读文件更新
     with open(csv_path, 'r', encoding='gbk') as file:
         csv_reader = csv.reader(file)
@@ -163,5 +165,5 @@ def parse_depart(csv_path):
                     depart = row[1]
                 format_logger("parse_depart", "成员 ==> 部门 : {} ==> {}".format(employee, depart))
                 sql_string = "REPLACE INTO {} VALUES('{}', '{}');".format(configs.departTable, employee, depart)
-                sqliteUtils.replace_data(sql_string)
+                sqlitex.replace_data(sql_string)
     pandas_csv("员工信息", employees)

@@ -1,3 +1,7 @@
+###########################################
+# 只提供数据库的增删改查的基本操作
+###########################################
+
 import configparser
 import os
 import sqlite3
@@ -5,17 +9,23 @@ from sqlite3 import OperationalError
 
 from poprogress import simple_progress
 
-from utility import configs, fileUtils, chartUtils, langUtils
+from configs import configs
+from utility import fileUtils, chartUtils, langUtils
 
 
 def open_connect():
-    database = '{0}/translated.db'.format(os.getcwd())
+    database = configs.database
     connect = sqlite3.connect(database)
     cursor = connect.cursor()
     return connect, cursor
 
 
-def create_table(sql_string):
+def close_connect(cursor, connect):
+    cursor.close()
+    connect.close()
+
+
+def create_table(sql_string: str):
     connect, cursor = open_connect()
     try:
         cursor.execute(sql_string)
@@ -26,18 +36,7 @@ def create_table(sql_string):
     close_connect(cursor, connect)
 
 
-def insert_issues(sql_string):
-    connect, cursor = open_connect()
-    try:
-        cursor.execute(sql_string)
-        connect.commit()
-    except OperationalError as e:
-        connect.rollback()
-        fileUtils.format_logger('SQLite error: insert_issues', [sql_string, e])
-    close_connect(cursor, connect)
-
-
-def show_table(table_name):
+def show_table(table_name: str):
     connect, cursor = open_connect()
     fileUtils.format_logger('show_table', table_name)
     cursor.execute("PRAGMA table_info({}})".format(table_name))
@@ -45,61 +44,52 @@ def show_table(table_name):
     close_connect(cursor, connect)
 
 
-def insert_data(table_name, tid, chinese, translated, proofread, sheet_name, timestamp):
+def insert_datas(sql_string: str, params=None):
     connect, cursor = open_connect()
-    sql_string = "REPLACE INTO {0} VALUES({1}, '{2}', '{3}', '{4}', '{5}', {6});".format(table_name, tid, chinese, translated, proofread, sheet_name, timestamp)
+    counts = 0
     try:
-        cursor.execute(sql_string)
+        if params is None:
+            cursor.execute(sql_string)
+        elif params is list:
+            cursor.executemany(sql_string, params)
+        else:
+            cursor.execute(sql_string, params)
+        counts = connect.total_changes
         connect.commit()
     except OperationalError as e:
         connect.rollback()
-        fileUtils.format_logger('SQLite error: insert_data', [sql_string, e])
+        fileUtils.format_logger('SQLite error: insert_datas', [sql_string, params, counts, e])
     close_connect(cursor, connect)
 
 
 # 先查翻译文档中是否有这个中文的
 # 再查对应的key的值
-def query_data(prefix, local_key, chinese):
-    table_name = 'translate'
+def query_datas(sql_string: str, params=None):
     connect, cursor = open_connect()
-    real_translate = ''
-    sql_string = "SELECT {0} FROM {1} WHERE local_key = '{2}'".format(configs.convert_lang(prefix), table_name, local_key)
-    cursor.execute(sql_string)
-    results = cursor.fetchall()
-    if len(results):
-        result = results[len(results) - 1]
-        real_translate = result[len(result) - 1]
-    # 如果不是中文，并且新的翻译表不存在则去翻译表获取
-    else:
-        sql_string = "SELECT chinese FROM {0} WHERE local_key = '{1}'".format(table_name, local_key)
-        cursor.execute(sql_string)
-        results = cursor.fetchall()
-        if len(results):
-            result = results[len(results) - 1]
-            real_translate = result[len(result) - 1]
-        elif prefix != configs.def_prefix:
-            # 最后的兜底
-            sql_string = "SELECT translated, proofread FROM {0} WHERE chinese='{1}';".format(configs.convert_lang(prefix), chinese)
+    results = []
+    try:
+        if params is list:
+            cursor.executemany(sql_string, params)
+        else:
             cursor.execute(sql_string)
-            results = cursor.fetchall()
-            if len(results):
-                result = results[len(results) - 1]
-                real_translate = result[0] if result[len(result) - 1] == configs.def_value else result[len(result) - 1]
+        results = cursor.fetchall()
+    except OperationalError as e:
+        fileUtils.format_logger('SQLite error: query_datas', [sql_string, params, e])
     close_connect(cursor, connect)
-    return convert_wifi(real_translate)
+    fileUtils.format_logger('SQLite: query_datas', [sql_string, params, results])
+    return results
 
 
-def convert_wifi(value):
-    real_value = value
-    # 统一配网中的 wifi wi-fi 大小写的问题
-    for wifi in configs.def_wifi:
-        real_value = real_value.replace(wifi, 'Wi-Fi')
-    return real_value
-
-
-def update_data(table_name, exchanged, chinese):
+def update_data(table_name: str, select_key, select_val, changes: dict):
     connect, cursor = open_connect()
-    sql_string = "UPDATE {0} SET exchanged={1} WHERE chinese='{2}';".format(table_name, exchanged, chinese)
+    sql_string = "UPDATE {0} SET ".format(table_name)
+    # for key, value in zip(dict.keys(), dict.values()):
+    for key, value in changes.items():
+        if value is int or value is float:
+            sql_string += "{0}={1}".format(key, value)
+        else:
+            sql_string += "{0}='{1}'".format(key, value)
+    sql_string += "WHERE {0}='{1}';".format(select_key, select_val)
     try:
         cursor.execute(sql_string)
         connect.commit()
@@ -109,56 +99,16 @@ def update_data(table_name, exchanged, chinese):
     close_connect(cursor, connect)
 
 
-def insert_local(table_name, local_key, local_value, module):
+def replace_data(sql_string, params: None):
     connect, cursor = open_connect()
-    sql_string = "REPLACE INTO {0} (local_key, local_value, module) VALUES('{1}', '{2}', '{3}');".format(table_name, local_key, local_value, module)
     try:
         cursor.execute(sql_string)
         connect.commit()
     except OperationalError as e:
+        # 遇到问题之后回滚此次提交
         connect.rollback()
-        fileUtils.format_logger('SQLite error: insert_local', [sql_string, e])
+        fileUtils.format_logger("replace_data", [sql_string, e])
     close_connect(cursor, connect)
-
-
-def merge_table():
-    # tabel_A, tabel_B, tabel_C, tabel_D 四张表查询方法：
-    """
-    select D.device_uuid,D.track_switch from tabel_A A
-    INNER JOIN tabel_B B
-    ON A.device_uuid=B.device_uuid
-    INNER JOIN tabel_C C
-    ON A.device_uuid=C.device_uuid
-    INNER JOIN tabel_D D
-    ON A.device_uuid=D.device_uuid;
-    """
-    connect, cursor = open_connect()
-    sql_string = '''
-    select A.local_key, A.local_value, B.local_value, C.local_value, D.local_value, E.local_value from chinese_local A
-    INNER JOIN english_local B ON A.local_key=B.local_key
-    INNER JOIN japanese_local C ON A.local_key=C.local_key
-    INNER JOIN korea_local D ON A.local_key=D.local_key 
-    INNER JOIN tradition_local E ON A.local_key=E.local_key 
-    group by A.local_value;
-    '''
-    try:
-        cursor.execute(sql_string)
-        results = cursor.fetchall()
-        for data_list in results:
-            # exists_sql = "SELECT COUNT(*) FROM {0}  WHERE local_key='{1}';".format(table_name, data_list[0])
-            sql_string = "REPLACE INTO translate (local_key, chinese, english, japanese, korea, tradition) VALUES(?, ?, ?, ?, ?, ?);"
-            cursor.execute(sql_string, data_list)
-            connect.commit()
-    except OperationalError as e:
-        fileUtils.format_logger('SQLite error: merge_translate', [sql_string, e])
-        connect.rollback()
-    close_connect(cursor, connect)
-
-
-def close_connect(cursor, connect):
-    cursor.close()
-    connect.close()
-
 
 def parse_cfg(section, key, default_value):
     conf_parser = configparser.ConfigParser()
@@ -223,18 +173,6 @@ def count_status(project, target, selections, status):
         fileUtils.format_logger('SQLite error: select_status', [sql_string, e])
     close_connect(cursor, connect)
     return count
-
-
-def replace_data(sql_string):
-    connect, cursor = open_connect()
-    try:
-        cursor.execute(sql_string)
-        connect.commit()
-    except OperationalError as e:
-        # 遇到问题之后回滚此次提交
-        connect.rollback()
-        fileUtils.format_logger("replace_data", [sql_string, e])
-    close_connect(cursor, connect)
 
 
 def query_depart(employee):
@@ -347,10 +285,3 @@ def update_issues(headers, datas, xls_path):
     fileUtils.parse_depart("{}/depart.csv".format(os.getcwd()))
     fileUtils.format_logger("update_issues", "创建表并插入数据結束")
 
-
-###########################
-# 先开启的后关闭
-###########################
-def close_connect(cursor, connect):
-    cursor.close()
-    connect.close()

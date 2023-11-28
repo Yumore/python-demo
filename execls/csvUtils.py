@@ -54,7 +54,7 @@ def insert_issues(headers, rows):
                 detail = detail.replace("'", '"')
             sql_string += "'{}'{}".format(detail, split)
         sql_string += ");"
-        sqliteUtils.insert_issues(sql_string)
+        sqliteUtils.insert_datas(sql_string)
 
     execlUtils.generate_chart(headers)
 
