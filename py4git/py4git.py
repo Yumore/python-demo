@@ -1,6 +1,6 @@
 import subprocess
 
-from gits import configs
+from py4git import configs
 
 
 def list_repos():

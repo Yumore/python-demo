@@ -4,7 +4,7 @@ import logging
 import time
 
 from drivers import driverExam
-from gits import py4git
+from py4git import py4git
 from utility import fileUtils
 
 
