@@ -3,9 +3,8 @@
 import logging
 import time
 
-from drivers import driverExam
 from py4git import py4git
-from utility import fileUtils
+from utility import loggerx
 
 if __name__ == '__main__':
     LOG_FILE = 'logger.log'
@@ -15,9 +14,9 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT)
     millis = int(round(time.time() * 1000))
 
-    py4git.list_repos()
+    py4git.update_repos()
 
-    driverExam.getExams()
+    # driverExam.getExams()
 
     use_time = int(round(time.time() * 1000)) - millis
-    fileUtils.format_logger("任务耗时", "{:.2f}秒".format(use_time / 1000))
+    loggerx.logger("任务耗时", "{:.2f}秒".format(use_time / 1000))

@@ -1,6 +1,5 @@
 import csv
 import hashlib
-import logging
 import os
 
 import pandas
@@ -107,11 +106,6 @@ def find_project(path):
 def filter_filename(file_path):
     (path, filename) = os.path.split(file_path)
     return filename
-
-
-# 日志打印
-def format_logger(tag, message):
-    logging.info('========> {0} - {1}'.format(tag, message))
 
 
 def pandas_csv(filename, rows):

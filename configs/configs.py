@@ -22,7 +22,7 @@ debuggable = True
 issueDoing = ["New", "InProgress", "Reopen", "Reviewed"]
 issueFinish = ["Resolved", "Cancel1", "Cancel2", "Reject", "Closed"]
 
-REPOS_PATH = "/Users/nathaniel/workspace"
+reposPath = "/Users/nathaniel/workspace"
 
 
 def convert_lang(prefix):
