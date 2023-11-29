@@ -1,9 +1,16 @@
 import os
 import subprocess
 
+from git import Repo
+
 from configs import configs
 from database import sqlitex
 
+
+def clone_repo():
+    local_path = os.path.join('test', 't1')
+    repo = Repo(local_path)
+    repo.git.pull()
 
 def update_repos():
     sql_string = "CREATE TABLE IF NOT EXISTS repos(rid INTEGER PRIMARY KEY, local_dir TEXT, repo_url TEXT, branch TEXT, update_time TEXT, logs TEXT);"
@@ -27,9 +34,10 @@ def update_repos():
             if line.startswith("merge"):
                 repo_info['branch'] = line.split("/")[2].strip()
         file.close()
-
         fetch_update(repo_info)
 
 
 def fetch_update(infos: dict):
-    local_dir = infos.get("local_dir")
+    print("fetch_update", infos)
+    repo = Repo(infos.get('local_dir'))
+    repo.git.pull()
