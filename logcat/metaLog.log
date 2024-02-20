@@ -1,0 +1,27 @@
+--------- beginning of main
+02-17 12:07:43.869 12397 12397 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+02-17 12:07:43.873 12397 12397 D AndroidRuntime: CheckJNI is OFF
+02-17 12:07:43.906 12397 12397 D ICU     : No timezone override file found: /data/misc/zoneinfo/current/icu/icu_tzdata.dat
+02-17 12:07:43.942 12397 12397 I Radio-JNI: register_android_hardware_Radio DONE
+02-17 12:07:43.961 12397 12397 D AndroidRuntime: Calling main entry com.android.commands.am.Am
+02-17 12:07:43.965  9960  9960 W Bundle  : Key com.quicinc.Trepn.UpdateAppState.Value expected Integer but value was a java.lang.String.  The default value -1 was returned.
+02-17 12:07:43.966  9960  9960 W Bundle  : Attempt to cast generated internal exception:
+02-17 12:07:43.966  9960  9960 W Bundle  : java.lang.ClassCastException: java.lang.String cannot be cast to java.lang.Integer
+02-17 12:07:43.966  9960  9960 W Bundle  : 	at android.os.BaseBundle.getInt(BaseBundle.java:801)
+02-17 12:07:43.966  9960  9960 W Bundle  : 	at android.content.Intent.getIntExtra(Intent.java:5284)
+02-17 12:07:43.966  9960  9960 W Bundle  : 	at com.quicinc.trepn.a.b.onReceive(Unknown Source)
+02-17 12:07:43.966  9960  9960 W Bundle  : 	at android.app.LoadedApk$ReceiverDispatcher$Args.run(LoadedApk.java:881)
+02-17 12:07:43.966  9960  9960 W Bundle  : 	at android.os.Handler.handleCallback(Handler.java:739)
+02-17 12:07:43.966  9960  9960 W Bundle  : 	at android.os.Handler.dispatchMessage(Handler.java:95)
+02-17 12:07:43.966  9960  9960 W Bundle  : 	at android.os.Looper.loop(Looper.java:148)
+02-17 12:07:43.966  9960  9960 W Bundle  : 	at android.app.ActivityThread.main(ActivityThread.java:5417)
+02-17 12:07:43.966  9960  9960 W Bundle  : 	at java.lang.reflect.Method.invoke(Native Method)
+02-17 12:07:43.966  9960  9960 W Bundle  : 	at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:726)
+02-17 12:07:43.966  9960  9960 W Bundle  : 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:616)
+02-17 12:07:43.967  9960  9960 I Trepn   : Trepn 6.2s: Received intent: com.quicinc.Trepn.UpdateAppState; desc: started
+02-17 12:07:43.968 12397 12397 D AndroidRuntime: Shutting down VM
+02-17 12:07:44.739 12406 12406 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+02-17 12:07:44.743 12406 12406 D AndroidRuntime: CheckJNI is OFF
+02-17 12:07:44.777 12406 12406 D ICU     : No timezone override file found: /data/misc/zoneinfo/current/icu/icu_tzdata.dat
+02-17 12:07:44.811 12406 12406 I Radio-JNI: register_android_hardware_Radio DONE
+02-17 12:07:44.832 12406 12406 D AndroidRuntime: Calling main entry com.android.commands.monkey.Monkey

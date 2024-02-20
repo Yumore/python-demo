@@ -5,10 +5,7 @@ import csv
 import os
 
 import numpy
-import pandas
 import xlrd
-
-from utility import language, configs
 
 def_value = '************************'
 execl_ext = 'xls'

@@ -1,6 +1,5 @@
 import csv
 import hashlib
-import os
 
 import pandas
 from poprogress import simple_progress
@@ -142,7 +141,7 @@ def parse_depart(csv_path):
             employee = strings[0]
             depart = "第三方"
         sql_string = "REPLACE INTO {} VALUES('{}','{}');".format(configs.departTable, employee, depart)
-        sqlitex.replace_data(sql_string)
+        sqlitex.replace_datas(sql_string)
     # 读文件更新
     with open(csv_path, 'r', encoding='gbk') as file:
         csv_reader = csv.reader(file)
@@ -159,5 +158,32 @@ def parse_depart(csv_path):
                     depart = row[1]
                 format_logger("parse_depart", "成员 ==> 部门 : {} ==> {}".format(employee, depart))
                 sql_string = "REPLACE INTO {} VALUES('{}', '{}');".format(configs.departTable, employee, depart)
-                sqlitex.replace_data(sql_string)
+                sqlitex.replace_datas(sql_string)
     pandas_csv("员工信息", employees)
+
+
+import os
+
+
+def create_file(file_path):
+    if not os.path.exists(file_path):
+        file = open(file_path, "w")
+        file.close()
+        print(f"文件 {file_path} 创建成功")
+    else:
+        print(f"文件 {file_path} 已经存在")
+
+
+def create_directory(dir_path):
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+        print(f"目录 {dir_path} 创建成功")
+    else:
+        print(f"目录 {dir_path} 已经存在")
+
+
+file_path = "example.txt"
+dir_path = "example_dir"
+
+create_file(file_path)
+create_directory(dir_path)

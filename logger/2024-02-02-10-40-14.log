@@ -1,0 +1,2 @@
+[2024-02-02  10:40:14.389] loggerx.py -> logger line:55 [INFO] : ========> test_logcat - (7, ['02-01', '16:11:08.903', '812', '812', 'I', 'HwBinder:812_1: type=1400 audit(0.0:33206): avc', 'denied { call } for scontext=u:r:mcucomm:s0 tcontext=u:r:system_app:s0 tclass=binder permissive=1'])
+[2024-02-02  10:40:14.389] loggerx.py -> logger line:55 [INFO] : ========> 任务耗时 - ('0.00秒',)
