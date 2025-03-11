@@ -1,12 +1,13 @@
 import json
 import os
-import requests
 import shutil
 import sqlite3
 import subprocess
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
+
+import requests
 
 # 100033表示建筑类
 # 其它可选的值参见“查询用的参数见这里.json”
