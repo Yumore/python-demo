@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ user.name }}的个人资料{% endblock %}
+
+{% block header %}{{ user.name }}的个人资料{% endblock %}
+
+{% block content %}
+<p>年龄：{{ user.age }}</p>
+<h2>爱好：</h2>
+<ul>
+    {% for hobby in user.hobbies %}
+    <li>{{ hobby }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}

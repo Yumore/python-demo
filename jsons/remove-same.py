@@ -10,6 +10,8 @@ if __name__ == '__main__':
             if key in unique_set:
                 continue
             else:
+                # key = key.capitalize()
+                key = key.title()
                 unique_set.append(key)
                 result_obj[key] = value
 

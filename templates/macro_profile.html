@@ -1,0 +1,14 @@
+{% macro user_card(name, age, hobbies) %}
+<div class="user-card">
+    <h3>{{ name }}的信息</h3>
+    <p>年龄：{{ age }}</p>
+    <h4>爱好：</h4>
+    <ul>
+        {% for hobby in hobbies %}
+        <li>{{ hobby }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endmacro %}
+
+{{ user_card(user.name, user.age, user.hobbies) }}
