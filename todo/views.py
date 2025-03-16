@@ -11,15 +11,15 @@
 # 本项目为小帅b的VIP教程之一，仅供学员学习，禁止商用           #
 #                                                              #
 ################################################################
+from app.todo import todo
+from app.todo.forms import TodoListForm
 from flask import render_template, request, url_for, redirect
-from flask_login import current_user, login_user, login_required
+from flask_login import current_user, login_required
 from sqlalchemy import and_, or_
 from sqlalchemy.sql.expression import func
 
 from app import db
 from app.models import Plan, SubPlan
-from app.todo import todo
-from app.todo.forms import TodoListForm
 
 
 @todo.route('/list', methods=['GET'])

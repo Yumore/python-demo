@@ -1,9 +1,10 @@
 import os
 
+from common.util.MySQLUtil import DBUtil
 
-def create_Mysql_uri(usernmae, password, host, port, database):
-    db_url = 'mysql+mysqldb://{}:{}@{}:{}/{}'.format(
-        usernmae, password, host, port, database)
+
+def create_Mysql_uri(username, password, host, port, database):
+    db_url = 'mysql+mysqldb://{}:{}@{}:{}/{}'.format(username, password, host, port, database)
     return db_url
 
 
@@ -36,9 +37,51 @@ class TestConfig(BaseConfig):
     WTF_CSRF_ENABLED = False
 
 
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+url_path_prefix = '/api'
+
+db_util = DBUtil('192.168.102.20', 'root', '123456', 'develo')  # auto_dev_hub
+KEYWORDS = ['1003626', '1003609']
+Ding_URl = "https://oapi.dingtalk.com/robot/send?access_token=xxxx"
+Ding_SCRET = "xxxx"
+
+
+# base configuration
+class Config:
+    SECRET_KEY = os.environ.get('KEY') or '123456'
+
+    # 数据库规则
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+
+
+# 开发环境
+class DevelopmentConfig(Config):
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@192.168.102.20:3306/auto_dev_hub'
+
+
+# 测试环境
+class TestingConfig(Config):
+    SQLALCHEMY_DATABASE_URI = 'mysql://root:password@localhost:3306/test-database'
+
+
+# 生产环境
+class ProductionConfig(Config):
+    SQLALCHEMY_DATABASE_URI = 'mysql://root:password@localhost:3306/product-database'
+
+
+# config dict
+# 生成一个字典，用来根据字符串找到对应的配置类
 config = {
-    "development": DevConfig,
-    "testing": TestConfig,
-    "production": ProConfig,
-    "default": DevConfig,
+    "development": DevelopmentConfig,
+    "testing": TestingConfig,
+    "production": ProductionConfig,
+    "default": DevelopmentConfig
 }
+# config = {
+#     "development": DevConfig,
+#     "testing": TestConfig,
+#     "production": ProConfig,
+#     "default": DevConfig,
+# }

@@ -10,10 +10,12 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_socketio import SocketIO
 
-from app.config import config
 from app.extension import db
 
 __author__ = '南宫乘风'
+
+from config import config
+
 app = Flask(__name__)
 # socket 的信息
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -62,7 +64,7 @@ def create_app(DevelopmentConfig=None):
 
     # 加载配置项
     app.config.from_object(config.get(DevelopmentConfig))
-    from app.api import config_blueprint
+    from api import config_blueprint
     config_blueprint(app)
     config_extensions(app)
     # 用于创建数据库表 一般不用 ：flask db init ， flask db migrate ，flask db upgrade

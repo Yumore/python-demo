@@ -5,15 +5,13 @@
 # @File    : authMiddleware.py
 # @Software: PyCharm
 import itsdangerous
-from app.api.dao.sysUser import GetSysUserName
-from flask import g, request
+from flask import g
 from flask_httpauth import HTTPTokenAuth
-from itsdangerous import TimedJSONWebSignatureSerializer
 
-from app.common.result.code import get_message
-from app.common.result.result import Result
-from app.common.util.LogHandler import log
-from app.config import secret_key
+from common.result.code import get_message
+from common.result.result import Result
+from common.util.LogHandler import log
+from flasks import request
 
 s = TimedJSONWebSignatureSerializer(secret_key, expires_in=28800)
 auth = HTTPTokenAuth()

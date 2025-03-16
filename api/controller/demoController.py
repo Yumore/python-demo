@@ -4,10 +4,9 @@
 # @Email   : 1794748404@qq.com
 # @File    : demoController.py
 # @Software: PyCharm
+from app.common.result.result import Result
 from flasgger import swag_from
 from flask import Blueprint, request
-
-from app.common.result.result import Result
 
 app = Blueprint('app', __name__)
 

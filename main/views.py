@@ -11,10 +11,10 @@
 # 本项目为小帅b的VIP教程之一，仅供学员学习，禁止商用           #
 #                                                              #
 ################################################################
+from app.main import main
 from flask import render_template
 from flask_login import current_user, login_required
 
-from app.main import main
 from app.models import Plan
 
 

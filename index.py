@@ -1,9 +1,6 @@
-import glob
-import os
-
 from flask import Flask, render_template, abort
 
-from middleware import CustomMiddleware
+from middleware.middleware import CustomMiddleware
 
 # 导入蓝图
 app = Flask(__name__)
@@ -14,17 +11,10 @@ app = Flask(__name__)
 
 app.wsgi_app = CustomMiddleware(app.wsgi_app)
 
-ROOT_PATH = os.path.expanduser('~/workspace')
-LOG_FILE = os.path.join(ROOT_PATH, 'update-git.log')
-
-# 查找所有git仓库(包含.git的目录)，并且按照字母降序排序(A->Z --> a->z)
-git_dirs = glob.glob(os.path.join(ROOT_PATH, '**', '.git'), recursive=True)
-git_dirs.sort(reverse=True)
-
 
 @app.route('/')
-def home():
-    return render_template('index.html', title='Welcome Page', name='Nathaniel', items=git_dirs)
+def home_page():
+    return render_template('index.html', title='Welcome Page', name='Nathaniel')
 
 
 @app.errorhandler(404)

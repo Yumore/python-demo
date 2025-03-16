@@ -11,7 +11,7 @@
 # 本项目为小帅b的VIP教程之一，仅供学员学习，禁止商用           #
 #                                                              #
 ################################################################
-from faker import Faker
+import Faker
 
 from app.models import Plan, SubPlan
 

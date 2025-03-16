@@ -11,11 +11,11 @@
 # 本项目为小帅b的VIP教程之一，仅供学员学习，禁止商用           #
 #                                                              #
 ################################################################
-from flask import render_template, redirect, url_for
-from flask_login import login_user, logout_user, current_user, login_required
-
 from app.auth import auth
 from app.auth.forms import SignupForm, LoginForm
+from flask import render_template, redirect, url_for
+from flask_login import login_user, logout_user
+
 from app.models import User
 
 
