@@ -6,7 +6,7 @@
 import pymysql
 
 
-class MySql:
+class MySqlx:
     def __init__(self, operate_tablename: str, my_sqldb_config_param: dict):
         assert isinstance(my_sqldb_config_param, dict), "请以字典类型的格式传入！"
         self._operate_tablename = operate_tablename

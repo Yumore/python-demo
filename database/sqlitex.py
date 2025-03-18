@@ -7,7 +7,8 @@ import os.path
 import sqlite3
 from sqlite3 import OperationalError
 
-from utility import loggerx, configs
+from database import configs
+from utility import loggerx
 
 
 def open_connect():

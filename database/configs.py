@@ -1,5 +1,28 @@
 import os
 
+# 数据库配置信息
+database = "{0}/database/mixdata.db".format(os.getcwd())
+issueTable = "issues"
+departTable = "employees"
+debuggable = True
+# status
+issueDoing = ["New", "InProgress", "Reopen", "Reviewed"]
+issueFinish = ["Resolved", "Cancel1", "Cancel2", "Reject", "Closed"]
+
+reposPath = "~/workspace"
+
+mysqlHost = "127.0.0.1"
+mysqlPort = 3306
+mysqlPwd = "Nathan@126.com"
+mysqlDb = "user_test"
+mysqlCharset = "utf8mb4"
+mysqlTimeout = 10 * 60 * 60
+mysqlReadTime = 10 * 60
+mysqlWriteTime = 10 * 60
+mysqlUser = "root"
+
+import os
+
 from common.util.MySQLUtil import DBUtil
 
 

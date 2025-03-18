@@ -1,8 +1,25 @@
+import pymysql.cursors
+
+from database import configs
+from database.mysqlx import MySqlx
+
+# Connect to the database
+# 外部无法直接访问
+_connection = pymysql.connect(host=configs.mysqlHost,
+                              user=configs.mysqlUser,
+                              password=configs.mysqlPwd,
+                              port=configs.mysqlPort,
+                              db=configs.mysqlDb,
+                              charset=configs.mysqlCharset,
+                              connect_timeout=configs.mysqlTimeout,
+                              cursorclass=pymysql.cursors.DictCursor)
+
+
 def my_mysql_test(operate_tablename: str, my_sqldb_config_param: dict):
     print("-------------my_mysql_test：注意下面传入数据的格式---------------")
 
     # 创建自己的mysql连接对象，operate_tablename是要进行操作的表名，my_sqldb_config_param是pymysql连接本机MySQL所需的配置参数
-    mysql = MySql(operate_tablename=operate_tablename, my_sqldb_config_param=my_sqldb_config_param)
+    mysql = MySqlx(operate_tablename=operate_tablename, my_sqldb_config_param=my_sqldb_config_param)
     print(mysql.operate_tablename)
     mysql.operate_tablename = "tb_user"  # 修改要操作的表
     print(mysql.operate_tablename)
@@ -42,7 +59,7 @@ def my_mysql_test(operate_tablename: str, my_sqldb_config_param: dict):
     print("更新数据后查询表中所有数据：\n", result)
 
 
-if __name__ == '__main__':
+def test_mysqli():
     my_sqldb_config_param = {
         "host": "127.0.0.1",  # 连接主机的ip
         "port": 3306,  # 连接主机的端口
@@ -53,3 +70,46 @@ if __name__ == '__main__':
     }
     operate_tablename = "tb_test"  # 设置该数据库准备操作的表名
     my_mysql_test(operate_tablename, my_sqldb_config_param)
+
+
+def connect_mysql():
+    _connection.ping(reconnect=True)
+    return _connection.cursor()
+
+
+def close_mysql():
+    _connection.close()
+
+
+def query_all(table_name: str):
+    result = []
+    reason = 'successful'
+    code = 0
+    try:
+        with connect_mysql() as cursor:
+            sql_string = f"SELECT * FROM `{table_name}`"
+            cursor.execute(sql_string)
+            result = cursor.fetchall()
+            cursor.close()
+    except Exception as e:
+        cursor.close()
+        reason = str(e)
+        code = -1
+    return result, reason, code
+
+
+def query_by_args(table_name: str, filed: str, keywords: str):
+    result = []
+    reason = 'successful'
+    code = 0
+    try:
+        with connect_mysql() as cursor:
+            sql_string = f"SELECT * FROM `{table_name}` where {filed} like concat('%%',%s,'%%')"
+            cursor.execute(sql_string, (keywords))
+            result = cursor.fetchall()
+            cursor.close()
+    except Exception as e:
+        cursor.close()
+        reason = str(e)
+        code = -1
+    return result, reason, code

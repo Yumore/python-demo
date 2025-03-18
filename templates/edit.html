@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>修改用户</title>
+    <link href="{{ url_for('static', filename = 'css/bootstrap.min.css') }}"
+          rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div class="row justify-content-center align-items-center g-1">
+        <div class="col-6 pt-5">
+            <div class="card">
+                <div class="card-header">
+                    新增用户
+                </div>
+                <div class="card-body">
+                    <form action="/edit" method="post">
+                        {% if item %}
+                        <input name="id" type="hidden" value="{{item.id}}">
+                        <div class="row mb-3">
+                            <!-- {{item}} -->
+                            <label class="col-sm-2 col-form-label col-form-label"
+                                   for="colFormLabelSm">姓名</label>
+                            <div class="col-sm-10">
+                                <input class="form-control form-control-sm" id="colFormLabelSm"
+                                       name="name" required type="text"
+                                       value="{{item.name}}">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" for="age">年龄</label>
+                            <div class="col-sm-10">
+                                <input class="form-control" id="age" name="age" required
+                                       type="text" value="{{item.age}}">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" for="gender">性别</label>
+                            <div class="col-3">
+                                <input %} %} checked
+                                       class="form-check-input" endif id="gender01" if item.gender=="男" name="gender" type="radio"
+                                       value="男" {% {%>
+                                <label class="form-check-label" for="gender01">男</label>
+                            </div>
+                            <div class="col-2">
+                                <input %} %} checked
+                                       class="form-check-input" endif id="gender02" if item.gender=="女" name="gender" type="radio"
+                                       value="女" {% {%>
+                                <label class="form-check-label" for="gender02">女</label>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label"
+                                   for="phone">联系电话</label>
+                            <div class="col-sm-10">
+                                <input class="form-control" id="phone" name="phone"
+                                       required type="text" value="{{item.phone}}">
+                            </div>
+                        </div>
+                        <div
+                                class="row mb-3 justify-content-center align-items-center ">
+                            <div class="col-6">
+                                <a class="btn btn-secondary  " href="/" type="button">
+                                    取消
+                                </a>
+                                <button class="btn btn-primary " type="submit">
+                                    保存
+                                </button>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+            <div class="bg-warning  ">{{success}}</div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
