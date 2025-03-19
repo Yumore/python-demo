@@ -46,7 +46,6 @@ def toAddPage():
 
 @app.route('/toEditPage/<int:id>')
 def toEditPage(id):
-    # print(id)
     try:
         with connectionSql().cursor() as cursor:
             sql = "select * from `tb_user` where id=%s"
